@@ -225,19 +225,16 @@
       gap: 12px;
     }
 
-    .step-pill {
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-    }
-
-    .step-pill.step5 {
-      background: linear-gradient(135deg, #059669, #10b981);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    .title-icon {
+      font-size: 1.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
     }
 
     .title-text {
@@ -246,14 +243,15 @@
       color: #f1f5f9;
     }
 
-    .score-badge {
+    .data-badge {
       font-size: 0.78rem;
       font-weight: 600;
       color: #38bdf8;
       background: rgba(56, 189, 248, 0.1);
       border: 1px solid rgba(56, 189, 248, 0.25);
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      letter-spacing: 0.3px;
     }
 
     /* Step 4 Controls */
@@ -568,15 +566,15 @@
     </section>
 
     <!-- ================================================================= -->
-    <!-- 步驟 4：氣溫預報 Web App (40%) -->
+    <!-- 氣溫預報趨勢與數據專區 -->
     <!-- ================================================================= -->
     <section class="section-card">
       <div class="section-header">
         <div class="section-title">
-          <span class="step-pill">步驟 4</span>
-          <span class="title-text">氣溫預報 Web App (折線圖與表格)</span>
+          <span class="title-icon">📈</span>
+          <span class="title-text">氣溫預報趨勢與數據 (Regional Temperature Forecast)</span>
         </div>
-        <span class="score-badge">配分比重：40%</span>
+        <span class="data-badge">即時 SQL 查詢驅動</span>
       </div>
 
       <!-- 下拉選單選擇地區 -->
@@ -640,20 +638,20 @@
     </section>
 
     <!-- ================================================================= -->
-    <!-- 步驟 5 (進階)：台灣地圖視覺化 (Optional 加分項) -->
+    <!-- 台灣地圖視覺化專區 -->
     <!-- ================================================================= -->
     <section class="section-card">
       <div class="section-header">
         <div class="section-title">
-          <span class="step-pill step5">步驟 5</span>
-          <span class="title-text">進階：台灣地圖視覺化 (各區當日平均溫度)</span>
+          <span class="title-icon">🗺️</span>
+          <span class="title-text">全台各區氣溫分佈互動地圖 (Taiwan Temperature Map)</span>
         </div>
-        <span class="score-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">
-          進階加分項 (Optional)
+        <span class="data-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">
+          即時聯動分析
         </span>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px;">
-        💡 互動功能：地圖標記依各區域當日平均溫度著色。<b>點擊地圖上的各區圓點，可同步切換上方步驟 4 的下拉選單、折線圖與預報表格！</b>
+        💡 互動功能：地圖標記依各區域當日平均溫度自動著色。<b>點擊地圖上的各區圓點，可同步切換上方區域下拉選單、折線圖與預報數據表格！</b>
       </p>
 
       <div class="grid-step5">
