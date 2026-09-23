@@ -16,7 +16,7 @@ import requests
 # 設定區：中央氣象署 (CWA) API 授權碼
 # 請至 https://opendata.cwa.gov.tw/ 申請授權碼並替換下方 "YOUR_API_KEY"
 # ==============================================================================
-CWA_API_KEY = "CWA-21063B0F-402B-432A-9E37-288B579C049A"
+CWA_API_KEY = os.getenv("CWA_API_KEY", "YOUR_API_KEY")
 
 # API 端點
 API_URL = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-A0010-001"
