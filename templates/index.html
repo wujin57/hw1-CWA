@@ -882,11 +882,10 @@
         scrollWheelZoom: false
       });
 
-      // 使用深色高質感地圖圖磚 (CartoDB Dark Matter)
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 19
+      // 使用免金鑰無浮水印地圖圖磚 (OpenStreetMap)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 18
       }).addTo(mapInstance);
 
       // 為六大區域建立彩色標記
