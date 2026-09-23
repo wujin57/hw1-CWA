@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HW10 Taiwan Weather Forecast | 互動式天氣預報 (Vercel 版)</title>
+  <title>HW1 Taiwan Weather Forecast | 從氣象資料到互動式天氣預報應用程式</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,61 +13,63 @@
   <!-- ApexCharts CDN -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   
-  <!-- Leaflet Map CSS & JS for Taiwan Map -->
+  <!-- Leaflet Map CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     :root {
-      --bg-primary: #0b1120;
+      --bg-dark: #090d16;
       --bg-card: rgba(17, 24, 39, 0.85);
-      --border-color: rgba(255, 255, 255, 0.1);
-      --border-hover: rgba(56, 189, 248, 0.4);
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
+      --bg-card-sub: rgba(30, 41, 59, 0.65);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(56, 189, 248, 0.35);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
       --text-muted: #64748b;
-      --accent-red: #ef4444;
-      --accent-blue: #3b82f6;
-      --accent-green: #22c55e;
-      --accent-yellow: #eab308;
-      --accent-cyan: #06b6d4;
-      --card-radius: 14px;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --c-red: #ef4444;
+      --c-blue: #3b82f6;
+      --c-green: #22c55e;
+      --c-yellow: #eab308;
+      --c-cyan: #38bdf8;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --glass-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at 15% 15%, #1e293b 0%, var(--bg-primary) 70%);
-      color: var(--text-primary);
+      background: radial-gradient(circle at 10% 10%, #1e293b 0%, var(--bg-dark) 65%);
+      color: var(--text-main);
       min-height: 100vh;
-      padding-bottom: 60px;
+      padding-bottom: 70px;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
     }
 
-    /* Header Banner */
+    /* Header */
     header {
-      padding: 24px 0;
+      padding: 22px 0;
       border-bottom: 1px solid var(--border-color);
-      background: rgba(11, 17, 32, 0.7);
-      backdrop-filter: blur(12px);
+      background: rgba(9, 13, 22, 0.8);
+      backdrop-filter: blur(16px);
       position: sticky;
       top: 0;
       z-index: 1000;
       margin-bottom: 28px;
     }
 
-    .header-content {
+    .header-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -75,36 +77,46 @@
       gap: 16px;
     }
 
-    .brand-wrap {
+    .brand {
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
-    .brand-icon {
-      font-size: 2.2rem;
-      background: rgba(56, 189, 248, 0.15);
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
       border-radius: 12px;
-      padding: 6px 10px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
     }
 
     .brand-title h1 {
-      font-size: 1.5rem;
+      font-size: 1.55rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 40%, #38bdf8 100%);
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #7dd3fc 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
     }
 
     .brand-title p {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-top: 2px;
+      font-size: 0.84rem;
+      color: var(--text-sub);
+      margin-top: 3px;
     }
 
-    .header-badge {
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-live {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -132,253 +144,364 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Card Wrapper */
-    .app-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--card-radius);
-      padding: 24px;
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-      backdrop-filter: blur(16px);
-      transition: border-color 0.2s ease;
+    /* KPI Summary Row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
     }
 
-    .app-card:hover {
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.25s ease;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .kpi-text .kpi-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-text .kpi-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin: 4px 0 2px;
+    }
+
+    .kpi-text .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+    }
+
+    .kpi-icon {
+      font-size: 1.8rem;
+      opacity: 0.85;
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 26px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--glass-shadow);
+      transition: border-color 0.25s ease;
+    }
+
+    .section-card:hover {
       border-color: var(--border-hover);
     }
 
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 700;
+    .section-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-      color: #e2e8f0;
-    }
-
-    .tag-badge {
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: #0284c7;
-      color: #fff;
-      font-weight: 600;
-    }
-
-    /* Section 4 Controls */
-    .control-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
       margin-bottom: 20px;
       flex-wrap: wrap;
-      background: rgba(15, 23, 42, 0.7);
-      padding: 14px 18px;
-      border-radius: 10px;
+      gap: 12px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-pill {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+
+    .step-pill.step5 {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .title-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #f1f5f9;
+    }
+
+    .score-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Step 4 Controls */
+    .control-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--bg-card-sub);
       border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      margin-bottom: 22px;
+    }
+
+    .control-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .control-label {
       font-size: 0.95rem;
-      font-weight: 600;
-      color: #cbd5e1;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    select.region-select {
-      background: #1e293b;
+    select.select-custom {
+      background: #0f172a;
       color: #f8fafc;
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 8px;
-      padding: 8px 16px;
+      padding: 8px 18px;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       outline: none;
-      min-width: 180px;
       transition: all 0.2s ease;
     }
 
-    select.region-select:hover, select.region-select:focus {
+    select.select-custom:hover, select.select-custom:focus {
       border-color: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
     }
 
-    /* Grid Layout: Chart & Table */
-    .grid-chart-table {
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #0284c7;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-export:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* Grid for Chart + Table */
+    .grid-step4 {
       display: grid;
       grid-template-columns: 3fr 2fr;
       gap: 20px;
-      align-items: stretch;
     }
 
     @media (max-width: 900px) {
-      .grid-chart-table {
+      .grid-step4 {
         grid-template-columns: 1fr;
       }
     }
 
-    .chart-box {
-      background: rgba(15, 23, 42, 0.6);
+    .chart-panel {
+      background: var(--bg-card-sub);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: var(--radius-sm);
+      padding: 18px;
       min-height: 380px;
     }
 
-    .table-box {
-      background: rgba(15, 23, 42, 0.6);
+    .table-panel {
+      background: var(--bg-card-sub);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: var(--radius-sm);
+      padding: 18px;
       display: flex;
       flex-direction: column;
     }
 
-    .box-header {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 12px;
+    .panel-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #94a3b8;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #cbd5e1;
     }
 
-    table.weather-table {
+    /* Table Styles */
+    table.data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
       text-align: center;
+      font-size: 0.9rem;
     }
 
-    table.weather-table th {
-      background: #1e293b;
-      padding: 10px 8px;
+    table.data-table th {
+      background: #0f172a;
+      padding: 12px 10px;
       color: #94a3b8;
       font-weight: 600;
       border-bottom: 1px solid var(--border-color);
     }
 
-    table.weather-table td {
-      padding: 11px 8px;
+    table.data-table td {
+      padding: 12px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: #e2e8f0;
     }
 
-    table.weather-table tr:hover {
-      background: rgba(255, 255, 255, 0.03);
+    table.data-table tr:hover {
+      background: rgba(255, 255, 255, 0.04);
     }
 
-    .temp-maxt {
+    .text-maxt {
       color: #ef4444;
       font-weight: 700;
     }
 
-    .temp-mint {
+    .text-mint {
       color: #3b82f6;
       font-weight: 700;
     }
 
-    /* SQL Query Visualizer Banner */
-    .sql-banner {
-      background: #090e17;
+    /* SQL Live Banner */
+    .sql-box {
+      margin-top: 18px;
+      background: #070c14;
       border: 1px solid rgba(56, 189, 248, 0.2);
       border-radius: 8px;
       padding: 10px 16px;
-      font-family: monospace;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
       font-size: 0.82rem;
       color: #38bdf8;
-      margin-top: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
+      overflow-x: auto;
     }
 
-    /* Section 5: Taiwan Map */
-    .map-grid {
+    /* Step 5 Map Layout */
+    .grid-step5 {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 20px;
     }
 
-    @media (max-width: 850px) {
-      .map-grid {
+    @media (max-width: 880px) {
+      .grid-step5 {
         grid-template-columns: 1fr;
       }
     }
 
     #taiwan-map {
-      height: 440px;
-      border-radius: 12px;
+      height: 460px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
       z-index: 10;
     }
 
-    .map-sidebar {
-      background: rgba(15, 23, 42, 0.6);
+    .map-side {
+      background: var(--bg-card-sub);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px;
+      border-radius: var(--radius-sm);
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
     .legend-title {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #e2e8f0;
       margin-bottom: 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .legend-item {
+    .legend-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 10px;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: #cbd5e1;
     }
 
-    .color-pill {
-      width: 16px;
-      height: 16px;
+    .color-box {
+      width: 18px;
+      height: 18px;
       border-radius: 4px;
       flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
     }
 
-    .region-info-card {
-      background: rgba(30, 41, 59, 0.7);
+    .region-detail-card {
+      background: rgba(15, 23, 42, 0.8);
       border: 1px solid var(--border-color);
       border-radius: 10px;
       padding: 16px;
-      margin-top: 16px;
+      margin-top: 18px;
     }
 
-    .region-info-title {
-      font-size: 1.1rem;
+    .detail-head {
+      font-size: 1.15rem;
       font-weight: 800;
       color: #38bdf8;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .region-info-detail {
-      font-size: 0.85rem;
+    .detail-body {
+      font-size: 0.88rem;
       color: #cbd5e1;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     /* Footer */
     footer {
       text-align: center;
-      margin-top: 40px;
-      font-size: 0.82rem;
       color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -386,69 +509,114 @@
 
   <!-- Top Header -->
   <header>
-    <div class="container header-content">
-      <div class="brand-wrap">
-        <div class="brand-icon">🌤️</div>
+    <div class="container header-flex">
+      <div class="brand">
+        <div class="brand-logo">🌤️</div>
         <div class="brand-title">
-          <h1>HW10 Taiwan Weather Forecast</h1>
+          <h1>HW1 Taiwan Weather Forecast</h1>
           <p>從氣象資料到互動式天氣預報應用程式 (CWA API × SQLite × Flask × Vercel)</p>
         </div>
       </div>
-      <div class="header-badge">
-        <span class="pulse-dot"></span>
-        <span>SQLite 資料庫 (data.db) 正常連線</span>
+      <div class="header-badges">
+        <div class="badge-live">
+          <span class="pulse-dot"></span>
+          <span>SQLite (data.db) 正常連線</span>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="container">
 
-    <!-- Section 4: 氣溫預報 Web App (40%) -->
-    <section class="app-card">
-      <div class="section-title">
-        <span class="tag-badge">步驟 4</span>
-        <span>氣溫預報 Web App (折線圖與表格)</span>
+    <!-- KPI Summary Row -->
+    <section class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-text">
+          <div class="kpi-label">今日最高氣溫</div>
+          <div class="kpi-val text-maxt" id="kpi-maxt">--°C</div>
+          <div class="kpi-sub" id="kpi-maxt-reg">全區最高</div>
+        </div>
+        <div class="kpi-icon">☀️</div>
       </div>
 
-      <!-- Controls: 下拉選單選擇地區 -->
-      <div class="control-row">
-        <label for="region-select" class="control-label">Select Region (選擇地區)：</label>
-        <select id="region-select" class="region-select" onchange="onRegionChange()">
-          <option value="中部地區" selected>中部地區</option>
-          <option value="北部地區">北部地區</option>
-          <option value="南部地區">南部地區</option>
-          <option value="東北部地區">東北部地區</option>
-          <option value="東部地區">東部地區</option>
-          <option value="東南部地區">東南部地區</option>
-        </select>
-        <span style="font-size: 0.82rem; color: #94a3b8;">
-          💡 下拉選擇地區後，後端透過 SQL 自 SQLite 即時查詢一週氣溫資料。
-        </span>
+      <div class="kpi-card">
+        <div class="kpi-text">
+          <div class="kpi-label">今日最低氣溫</div>
+          <div class="kpi-val text-mint" id="kpi-mint">--°C</div>
+          <div class="kpi-sub" id="kpi-mint-reg">全區最低</div>
+        </div>
+        <div class="kpi-icon">❄️</div>
       </div>
 
-      <!-- Grid Layout: 折線圖 (左) + 資料表格 (右) -->
-      <div class="grid-chart-table">
+      <div class="kpi-card">
+        <div class="kpi-text">
+          <div class="kpi-label">最大日溫差</div>
+          <div class="kpi-val" style="color: #f59e0b;" id="kpi-spread">--°</div>
+          <div class="kpi-sub" id="kpi-spread-reg">日夜溫差</div>
+        </div>
+        <div class="kpi-icon">⚡</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-text">
+          <div class="kpi-label">預報涵蓋範疇</div>
+          <div class="kpi-val" style="color: #10b981;">6 區 • 7 天</div>
+          <div class="kpi-sub">共 42 筆預報紀錄</div>
+        </div>
+        <div class="kpi-icon">📊</div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- 步驟 4：氣溫預報 Web App (40%) -->
+    <!-- ================================================================= -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="step-pill">步驟 4</span>
+          <span class="title-text">氣溫預報 Web App (折線圖與表格)</span>
+        </div>
+        <span class="score-badge">配分比重：40%</span>
+      </div>
+
+      <!-- 下拉選單選擇地區 -->
+      <div class="control-bar">
+        <div class="control-left">
+          <label for="region-select" class="control-label">
+            <span>📍 Select Region (選擇地區)：</span>
+          </label>
+          <select id="region-select" class="select-custom" onchange="onRegionChange()">
+            <option value="中部地區" selected>中部地區</option>
+            <option value="北部地區">北部地區</option>
+            <option value="南部地區">南部地區</option>
+            <option value="東北部地區">東北部地區</option>
+            <option value="東部地區">東部地區</option>
+            <option value="東南部地區">東南部地區</option>
+          </select>
+        </div>
+        <button class="btn-export" onclick="exportCSV()">
+          📥 下載一週預報 CSV
+        </button>
+      </div>
+
+      <!-- 折線圖 (左) + 一週資料表格 (右) -->
+      <div class="grid-step4">
         <!-- 折線圖 -->
-        <div class="chart-box">
-          <div class="box-header">
-            <span id="chart-heading" style="color: #f8fafc; font-weight: 700;">
-              Temperature Forecast - 中部地區
-            </span>
-            <span style="font-size: 0.8rem; color: #64748b;">單位: °C</span>
+        <div class="chart-panel">
+          <div class="panel-head">
+            <span id="chart-title">Temperature Forecast - 中部地區</span>
+            <span style="font-size: 0.8rem; color: #64748b;">氣溫單位: °C</span>
           </div>
           <div id="apex-chart-container" style="min-height: 320px;"></div>
         </div>
 
         <!-- 一週資料表格 -->
-        <div class="table-box">
-          <div class="box-header">
-            <span style="color: #f8fafc; font-weight: 700;">一週預報數據明細</span>
-            <button onclick="exportCSV()" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; background: #0284c7; border: none; color: #fff; cursor: pointer;">
-              📥 匯出 CSV
-            </button>
+        <div class="table-panel">
+          <div class="panel-head">
+            <span>一週資料表格 (Date / MinT / MaxT)</span>
           </div>
           <div style="flex: 1; overflow-y: auto;">
-            <table class="weather-table">
+            <table class="data-table">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -457,64 +625,74 @@
                 </tr>
               </thead>
               <tbody id="table-body">
-                <!-- 由 JavaScript 動態填入 -->
+                <!-- 由 JavaScript 填入 -->
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- 顯示當前執行的 SQL 查詢語法 -->
-      <div class="sql-banner">
+      <!-- 顯示執行的 SQL 查詢語法 -->
+      <div class="sql-box">
         <span>⚡ <b>後端執行 SQL 查詢：</b></span>
-        <code id="sql-display">SELECT id, regionName, dataDate, minT, maxT FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
+        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
       </div>
     </section>
 
-    <!-- Section 5: 進階：台灣地圖視覺化 (Optional) -->
-    <section class="app-card">
-      <div class="section-title">
-        <span class="tag-badge" style="background: #10b981;">步驟 5 (進階加分)</span>
-        <span>台灣地圖視覺化 (各區當日平均溫度)</span>
+    <!-- ================================================================= -->
+    <!-- 步驟 5 (進階)：台灣地圖視覺化 (Optional 加分項) -->
+    <!-- ================================================================= -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="step-pill step5">步驟 5</span>
+          <span class="title-text">進階：台灣地圖視覺化 (各區當日平均溫度)</span>
+        </div>
+        <span class="score-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">
+          進階加分項 (Optional)
+        </span>
       </div>
-      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
-        點擊地圖上的區域圓點標記，可直接切換上方折線圖與表格的所屬區域！
+      <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px;">
+        💡 互動功能：地圖標記依各區域當日平均溫度著色。<b>點擊地圖上的各區圓點，可同步切換上方步驟 4 的下拉選單、折線圖與預報表格！</b>
       </p>
 
-      <div class="map-grid">
-        <!-- Leaflet Map -->
+      <div class="grid-step5">
+        <!-- 台灣 Leaflet 地圖 -->
         <div id="taiwan-map"></div>
 
-        <!-- Sidebar / Legend -->
-        <div class="map-sidebar">
+        <!-- 圖例與即時狀態面板 -->
+        <div class="map-side">
           <div>
             <div class="legend-title">🎨 依平均溫度設定顏色：</div>
-            <div class="legend-item">
-              <div class="color-pill" style="background: #3b82f6;"></div>
+            <div class="legend-row">
+              <div class="color-box" style="background: #3b82f6;"></div>
               <span>&lt; 20°C (藍色)</span>
             </div>
-            <div class="legend-item">
-              <div class="color-pill" style="background: #22c55e;"></div>
+            <div class="legend-row">
+              <div class="color-box" style="background: #22c55e;"></div>
               <span>20 - 25°C (綠色)</span>
             </div>
-            <div class="legend-item">
-              <div class="color-pill" style="background: #eab308;"></div>
+            <div class="legend-row">
+              <div class="color-box" style="background: #eab308;"></div>
               <span>25 - 30°C (黃色)</span>
             </div>
-            <div class="legend-item">
-              <div class="color-pill" style="background: #ef4444;"></div>
+            <div class="legend-row">
+              <div class="color-box" style="background: #ef4444;"></div>
               <span>&gt; 30°C (紅色)</span>
             </div>
           </div>
 
-          <!-- Selected Region Detail Card -->
-          <div class="region-info-card" id="region-card">
-            <div class="region-info-title" id="info-region-name">中部地區</div>
-            <div class="region-info-detail">
-              <b>今日日期：</b><span id="info-date">2026-09-23</span><br>
-              <b>最低溫 (MinT)：</b><span id="info-mint" class="temp-mint">22.5°C</span><br>
-              <b>最高溫 (MaxT)：</b><span id="info-maxt" class="temp-maxt">30.5°C</span><br>
-              <b>當日平均溫：</b><span id="info-avgt" style="color: #eab308; font-weight: bold;">26.5°C</span>
+          <!-- 區域詳情卡片 -->
+          <div class="region-detail-card">
+            <div class="detail-head">
+              <span id="detail-reg-name">中部地區</span>
+              <span id="detail-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #eab308; color: #000; font-weight: 700;">均溫 26.5°C</span>
+            </div>
+            <div class="detail-body">
+              <b>預報首日：</b><span id="detail-date">2026-09-23</span><br>
+              <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">22.5°C</span><br>
+              <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">30.5°C</span><br>
+              <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">8.0°C</span>
             </div>
           </div>
         </div>
@@ -524,18 +702,18 @@
   </main>
 
   <footer>
-    <p>HW10 Taiwan Weather Forecast • CWA API × SQLite × Flask × Vercel Serverless</p>
+    <p>HW1 Taiwan Weather Forecast • 交通部中央氣象署 (CWA) 開放資料平台 • Vercel Serverless 架構</p>
   </footer>
 
   <script>
-    // 區域地理中心座標 (供 Leaflet 台灣地圖繪製)
+    // 台灣六大區域中心地理座標 (供 Leaflet 地圖定位)
     const REGION_COORDS = {
-      "北部地區": { lat: 25.04, lng: 121.53 },
-      "東北部地區": { lat: 24.75, lng: 121.75 },
-      "中部地區": { lat: 24.15, lng: 120.68 },
-      "東部地區": { lat: 23.98, lng: 121.60 },
-      "南部地區": { lat: 22.62, lng: 120.31 },
-      "東南部地區": { lat: 22.75, lng: 121.14 }
+      "北部地區": { lat: 25.04, lng: 121.53, short: "北部" },
+      "東北部地區": { lat: 24.75, lng: 121.75, short: "東北部" },
+      "中部地區": { lat: 24.15, lng: 120.68, short: "中部" },
+      "東部地區": { lat: 23.98, lng: 121.60, short: "東部" },
+      "南部地區": { lat: 22.62, lng: 120.31, short: "南部" },
+      "東南部地區": { lat: 22.75, lng: 121.14, short: "東南部" }
     };
 
     let allForecasts = [];
@@ -544,7 +722,7 @@
     let mapInstance = null;
     let mapMarkers = {};
 
-    // 依平均溫度決定顏色 (完全吻合投影片圖例)
+    // 依平均溫度決定顏色 (完全吻合投影片規範)
     function getTempColor(avgTemp) {
       if (avgTemp < 20) return "#3b82f6";       // <20°C 藍色
       if (avgTemp <= 25) return "#22c55e";      // 20-25°C 綠色
@@ -552,13 +730,14 @@
       return "#ef4444";                         // >30°C 紅色
     }
 
-    // 初始化與讀取資料
+    // 初始化載入
     async function init() {
       try {
         const res = await fetch('/api/forecasts');
         const json = await res.json();
         if (json.status === 'success') {
           allForecasts = json.data;
+          renderKPIs();
           renderRegionView(currentSelectedRegion);
           initTaiwanMap();
         }
@@ -567,27 +746,52 @@
       }
     }
 
-    // 當下拉選單變更時觸發
+    // 計算並渲染頂部 KPI 卡片
+    function renderKPIs() {
+      if (!allForecasts.length) return;
+      let maxItem = allForecasts[0];
+      let minItem = allForecasts[0];
+      let maxSpreadItem = allForecasts[0];
+
+      allForecasts.forEach(d => {
+        if (d.maxT > maxItem.maxT) maxItem = d;
+        if (d.minT < minItem.minT) minItem = d;
+        const spread = d.maxT - d.minT;
+        if (spread > (maxSpreadItem.maxT - maxSpreadItem.minT)) maxSpreadItem = d;
+      });
+
+      document.getElementById("kpi-maxt").textContent = `${maxItem.maxT}°C`;
+      document.getElementById("kpi-maxt-reg").textContent = `${maxItem.regionName} (${maxItem.dataDate.slice(5)})`;
+
+      document.getElementById("kpi-mint").textContent = `${minItem.minT}°C`;
+      document.getElementById("kpi-mint-reg").textContent = `${minItem.regionName} (${minItem.dataDate.slice(5)})`;
+
+      const maxSpreadVal = (maxSpreadItem.maxT - maxSpreadItem.minT).toFixed(1);
+      document.getElementById("kpi-spread").textContent = `${maxSpreadVal}°`;
+      document.getElementById("kpi-spread-reg").textContent = `${maxSpreadItem.regionName} (${maxSpreadItem.dataDate.slice(5)})`;
+    }
+
+    // 下拉選單變更時觸發
     function onRegionChange() {
       const select = document.getElementById("region-select");
       currentSelectedRegion = select.value;
       renderRegionView(currentSelectedRegion);
     }
 
-    // 渲染特定區域的折線圖、表格與 SQL 指令展示
+    // 渲染步驟 4：折線圖、一週資料表格與 SQL 語法
     function renderRegionView(regionName) {
       const regionData = allForecasts.filter(d => d.regionName === regionName);
       if (!regionData.length) return;
 
-      // 更新 SQL 顯示
-      document.getElementById("sql-display").textContent = 
+      // 1. 更新 SQL 顯示
+      document.getElementById("sql-text").textContent = 
         `SELECT id, regionName, dataDate, minT, maxT FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
 
-      // 更新折線圖標題
-      document.getElementById("chart-heading").textContent = `Temperature Forecast - ${regionName}`;
+      // 2. 更新折線圖標題
+      document.getElementById("chart-title").textContent = `Temperature Forecast - ${regionName}`;
 
-      // 1. 渲染 ApexCharts 折線圖 (MaxT 紅線, MinT 藍線, 帶圓點，如投影片所示)
-      const dates = regionData.map(d => d.dataDate.slice(5)); // 取 MM-DD 或完整日期
+      // 3. 繪製最高/最低溫折線圖 (MaxT 紅線, MinT 藍線, 附圓點標記)
+      const dates = regionData.map(d => d.dataDate.slice(5)); // MM-DD 格式
       const maxTemps = regionData.map(d => d.maxT);
       const minTemps = regionData.map(d => d.minT);
 
@@ -633,39 +837,46 @@
       chartInstance = new ApexCharts(document.getElementById("apex-chart-container"), chartOptions);
       chartInstance.render();
 
-      // 2. 渲染右側表格 (Date, MinT, MaxT)
+      // 4. 渲染右側表格 (Date, MinT, MaxT)
       const tbody = document.getElementById("table-body");
       tbody.innerHTML = "";
       regionData.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.dataDate}</td>
-          <td class="temp-mint">${row.minT}</td>
-          <td class="temp-maxt">${row.maxT}</td>
+          <td class="text-mint">${row.minT}</td>
+          <td class="text-maxt">${row.maxT}</td>
         `;
         tbody.appendChild(tr);
       });
 
-      // 3. 更新地圖資訊卡
-      updateInfoCard(regionName, regionData[0]);
+      // 5. 更新步驟 5 右側詳情卡片
+      updateDetailCard(regionName, regionData[0]);
     }
 
-    // 更新右側資訊卡內容
-    function updateInfoCard(regionName, firstDayData) {
+    // 更新步驟 5 區域詳情卡片
+    function updateDetailCard(regionName, firstDayData) {
       if (!firstDayData) return;
       const avg = ((firstDayData.minT + firstDayData.maxT) / 2).toFixed(1);
-      document.getElementById("info-region-name").textContent = regionName;
-      document.getElementById("info-date").textContent = firstDayData.dataDate;
-      document.getElementById("info-mint").textContent = `${firstDayData.minT}°C`;
-      document.getElementById("info-maxt").textContent = `${firstDayData.maxT}°C`;
-      document.getElementById("info-avgt").textContent = `${avg}°C`;
+      const spread = (firstDayData.maxT - firstDayData.minT).toFixed(1);
+      const color = getTempColor(avg);
+
+      document.getElementById("detail-reg-name").textContent = regionName;
+      document.getElementById("detail-date").textContent = firstDayData.dataDate;
+      document.getElementById("detail-mint").textContent = `${firstDayData.minT}°C`;
+      document.getElementById("detail-maxt").textContent = `${firstDayData.maxT}°C`;
+      document.getElementById("detail-spread").textContent = `${spread}°C`;
+
+      const badge = document.getElementById("detail-badge");
+      badge.textContent = `當日均溫 ${avg}°C`;
+      badge.style.background = color;
+      badge.style.color = (color === "#eab308") ? "#000" : "#fff";
     }
 
-    // 初始化台灣互動地圖
+    // 初始化步驟 5：台灣 Leaflet 互動地圖
     function initTaiwanMap() {
       if (mapInstance) return;
 
-      // 建立 Leaflet 地圖中心點
       mapInstance = L.map("taiwan-map", {
         center: [23.7, 120.95],
         zoom: 7,
@@ -673,14 +884,14 @@
         scrollWheelZoom: false
       });
 
-      // 使用深色地圖圖磚 (CartoDB Dark Matter)
+      // 使用深色高質感地圖圖磚 (CartoDB Dark Matter)
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
         subdomains: "abcd",
         maxZoom: 19
       }).addTo(mapInstance);
 
-      // 計算各區域首日之平均溫度並標記
+      // 為六大區域建立彩色標記
       Object.keys(REGION_COORDS).forEach(region => {
         const regionRecords = allForecasts.filter(d => d.regionName === region);
         if (!regionRecords.length) return;
@@ -690,36 +901,36 @@
         const color = getTempColor(avg);
         const coords = REGION_COORDS[region];
 
-        // 圓形溫度標記
+        // 圓點標記
         const marker = L.circleMarker([coords.lat, coords.lng], {
-          radius: 12,
+          radius: 13,
           fillColor: color,
           color: "#ffffff",
           weight: 2,
           opacity: 1,
-          fillOpacity: 0.85
+          fillOpacity: 0.88
         }).addTo(mapInstance);
 
         marker.bindPopup(`
-          <div style="font-size:14px; text-align:center;">
+          <div style="font-size:13px; text-align:center; padding: 4px;">
             <b>${region}</b><br>
-            當日均溫: <b>${avg.toFixed(1)}°C</b><br>
-            <small>點擊切換折線圖</small>
+            當日平均溫: <b>${avg.toFixed(1)}°C</b><br>
+            <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
           </div>
         `);
 
-        // 點擊地圖標記時聯動切換下拉選單與折線圖
+        // 點擊地圖圓點時，同步切換上方步驟 4 的下拉選單與折線圖！
         marker.on("click", () => {
           document.getElementById("region-select").value = region;
           currentSelectedRegion = region;
           renderRegionView(region);
         });
 
-        // 加上永久文字標籤 (如：北部、中部、南部)
+        // 區域文字標籤
         L.marker([coords.lat, coords.lng], {
           icon: L.divIcon({
             className: 'map-label',
-            html: `<div style="transform: translate(12px, -8px); font-weight:bold; font-size:12px; color:#fff; text-shadow:0 0 6px #000;">${region.replace("地區", "")}</div>`,
+            html: `<div style="transform: translate(12px, -8px); font-weight:bold; font-size:12px; color:#f8fafc; text-shadow:0 0 6px #000;">${coords.short}</div>`,
             iconSize: [60, 20]
           })
         }).addTo(mapInstance);
@@ -745,7 +956,6 @@
       document.body.removeChild(a);
     }
 
-    // 頁面載入完成後啟動
     window.addEventListener("DOMContentLoaded", init);
   </script>
 </body>

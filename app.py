@@ -123,7 +123,7 @@ def refresh_data():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
     print(f"\n=======================================================")
-    print(f"  HW10 Taiwan Weather Web App 啟動中...")
+    print(f"  HW1 Taiwan Weather Web App 啟動中...")
     print(f"  本地預覽網址: http://localhost:{port}")
     print(f"=======================================================\n")
     app.run(host="0.0.0.0", port=port, debug=True)

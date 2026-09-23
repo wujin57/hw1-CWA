@@ -1,4 +1,4 @@
-# HW10 - Taiwan Weather Forecast (從氣象資料到互動式天氣預報應用程式)
+# HW1 - Taiwan Weather Forecast (從氣象資料到互動式天氣預報應用程式)
 
 本專案依據單一職責原則 (Single Responsibility Principle, SRP) 實作，串接交通部中央氣象署 (CWA) 開放資料 API，擷取台灣六大區域一週氣溫預報，清洗萃取每日最高與最低氣溫存入 SQLite 資料庫，並採用 **Vercel Serverless 架構 (Flask + 現代化響應式前端)** 提供高質感視覺化儀表板。
 
@@ -88,7 +88,7 @@ python3 app.py
 1. 推送代碼至 GitHub：
    ```bash
    git add .
-   git commit -m "feat: complete HW10 weather forecast with Vercel deployment"
+   git commit -m "feat: complete HW1 weather forecast with Vercel deployment"
    git push origin main
    ```
 2. 登入 [Vercel 官網](https://vercel.com)，點擊 **"Add New..."** -> **"Project"**。
