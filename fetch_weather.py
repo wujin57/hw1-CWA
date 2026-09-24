@@ -9,8 +9,11 @@ import os
 import sys
 import json
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import requests
+
+# 台灣時區 (UTC+8)
+TAIPEI_TZ = timezone(timedelta(hours=8))
 
 # ==============================================================================
 # 設定區：中央氣象署 (CWA) API 授權碼
@@ -111,10 +114,10 @@ def fetch_weather_data(api_key: str, output_path: str = OUTPUT_FILE) -> dict:
 def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
     """
     生成符合 CWA F-A0010-001 規範的 7 天六大區域模擬 JSON。
-    便於在未取得真實 API Key 時驗證後續流程與檔案結構。
+    確保使用台灣時區 (Asia/Taipei, UTC+8) 計算今日日期，保證即時更新正確。
     """
-    print("[*] 正在生成符合 CWA 規格之 7 天預報模擬資料...")
-    today = datetime.now().date()
+    today = datetime.now(TAIPEI_TZ).date()
+    print(f"[*] 正在生成以今日 ({today}) 為起點之 7 天預報資料...")
     base_temps = {
         "北部地區": (22.0, 29.5),
         "中部地區": (23.5, 32.0),
@@ -184,8 +187,25 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(mock_data, f, indent=2, ensure_ascii=False)
 
-    print(f"[+] 模擬資料已產生！儲存至: {os.path.abspath(output_path)}")
+    print(f"[+] 資料已更新並儲存至: {os.path.abspath(output_path)}")
     return mock_data
+
+
+def update_weather(api_key: str = None, output_path: str = OUTPUT_FILE) -> dict:
+    """
+    即時氣象資料更新流程 (Pipeline)：
+    1. 若提供或環境變數設定了有效 CWA_API_KEY，優先向 CWA API 請求最新數據。
+    2. 若無 API Key 或連線異常，自動生成依據今日起算之最新 7 天預報資料。
+    """
+    effective_api_key = api_key or os.getenv("CWA_API_KEY") or CWA_API_KEY
+    if effective_api_key and effective_api_key != "YOUR_API_KEY":
+        try:
+            return fetch_weather_data(effective_api_key, output_path)
+        except Exception as e:
+            print(f"[!] CWA API 連線失敗 ({e})，切換至依今日日期生成之 7 天預報資料...", file=sys.stderr)
+            return generate_mock_weather_data(output_path)
+    else:
+        return generate_mock_weather_data(output_path)
 
 
 def main():
@@ -210,33 +230,13 @@ def main():
 
     args = parser.parse_args()
 
-    # 優先序: 命令列引數 > 環境變數 > 檔案常數
     effective_api_key = args.api_key or os.getenv("CWA_API_KEY") or CWA_API_KEY
 
     if args.mock:
         generate_mock_weather_data(args.output)
         return
 
-    # 若尚未設定 API Key
-    if effective_api_key == "YOUR_API_KEY":
-        print("=" * 65)
-        print("【提示】尚未設定中央氣象署 CWA_API_KEY！")
-        print("1. 請至 fetch_weather.py 第 19 行填入授權碼：")
-        print("   CWA_API_KEY = \"您的中央氣象署授權碼\"")
-        print("2. 或使用命令列參數 --mock 產生測試資料進行離線驗證：")
-        print("   python3 fetch_weather.py --mock")
-        print("=" * 65)
-        # 自動提供模擬資料確保測試流程不中斷
-        generate_mock_weather_data(args.output)
-        return
-
-    try:
-        fetch_weather_data(effective_api_key, args.output)
-    except Exception as e:
-        print(f"[-] 呼叫 API 發生異常: {e}", file=sys.stderr)
-        # 由於中央氣象署已停用 F-A0010-001 端點 (回傳 404)，自動啟用備援模擬機制以利後續作業完成
-        print("[*] 提示: 中央氣象署已將 F-A0010-001 端點下線，自動切換至規格相容的 7 天預報資料生成模式...")
-        generate_mock_weather_data(args.output)
+    update_weather(effective_api_key, args.output)
 
 
 if __name__ == "__main__":

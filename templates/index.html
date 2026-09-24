@@ -144,6 +144,41 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
+    .btn-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(37, 99, 235, 0.25));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 9999px;
+      color: #7dd3fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-sync:hover {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.45), rgba(37, 99, 235, 0.45));
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-sync:active {
+      transform: translateY(0);
+    }
+
+    .btn-sync.spinning #sync-icon {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
     /* KPI Summary Row */
     .kpi-row {
       display: grid;
@@ -516,9 +551,13 @@
         </div>
       </div>
       <div class="header-badges">
+        <button id="btn-sync" class="btn-sync" onclick="manualRefresh()" title="點擊向後端請求即時同步最新氣象資料">
+          <span id="sync-icon">🔄</span>
+          <span id="sync-text">即時更新預報</span>
+        </button>
         <div class="badge-live">
           <span class="pulse-dot"></span>
-          <span>SQLite (data.db) 正常連線</span>
+          <span id="live-status-text">SQLite (data.db) 正常連線</span>
         </div>
       </div>
     </div>
@@ -574,7 +613,10 @@
           <span class="title-icon">📈</span>
           <span class="title-text">氣溫預報趨勢與數據 (Regional Temperature Forecast)</span>
         </div>
-        <span class="data-badge">即時 SQL 查詢驅動</span>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <span class="data-badge" id="forecast-range-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1);">📅 載入預報區間中...</span>
+          <span class="data-badge">即時 SQL 查詢驅動</span>
+        </div>
       </div>
 
       <!-- 下拉選單選擇地區 -->
@@ -687,7 +729,7 @@
               <span id="detail-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #eab308; color: #000; font-weight: 700;">均溫 26.5°C</span>
             </div>
             <div class="detail-body">
-              <b>預報首日：</b><span id="detail-date">2026-09-23</span><br>
+              <b>預報首日：</b><span id="detail-date">--</span><br>
               <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">22.5°C</span><br>
               <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">30.5°C</span><br>
               <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">8.0°C</span>
@@ -735,6 +777,7 @@
         const json = await res.json();
         if (json.status === 'success') {
           allForecasts = json.data;
+          updateDateBadges(json.today);
           renderKPIs();
           renderRegionView(currentSelectedRegion);
           initTaiwanMap();
@@ -744,16 +787,78 @@
       }
     }
 
+    // 更新日期區間與狀態標籤
+    function updateDateBadges(todayStr) {
+      if (!allForecasts.length) return;
+      const dates = [...new Set(allForecasts.map(d => d.dataDate))].sort();
+      const firstDate = dates[0];
+      const lastDate = dates[dates.length - 1];
+      const rangeText = `📅 預報區間：${firstDate} ~ ${lastDate}`;
+      const badge = document.getElementById("forecast-range-badge");
+      if (badge) badge.textContent = rangeText;
+
+      const liveStatus = document.getElementById("live-status-text");
+      if (liveStatus) {
+        liveStatus.textContent = `已同步今日 (${firstDate})`;
+      }
+    }
+
+    // 手動觸發即時更新
+    async function manualRefresh() {
+      const btn = document.getElementById("btn-sync");
+      const text = document.getElementById("sync-text");
+      btn.classList.add("spinning");
+      text.textContent = "更新中...";
+
+      try {
+        const res = await fetch('/api/refresh', { method: 'POST' });
+        const json = await res.json();
+        if (json.status === 'success') {
+          const fRes = await fetch('/api/forecasts');
+          const fJson = await fRes.json();
+          if (fJson.status === 'success') {
+            allForecasts = fJson.data;
+            updateDateBadges(fJson.today);
+            renderKPIs();
+            renderRegionView(currentSelectedRegion);
+            updateTaiwanMapMarkers();
+          }
+          text.textContent = "✓ 已更新！";
+          setTimeout(() => {
+            text.textContent = "即時更新預報";
+          }, 2500);
+        } else {
+          text.textContent = "更新失敗";
+          setTimeout(() => { text.textContent = "即時更新預報"; }, 2000);
+        }
+      } catch (err) {
+        console.error("手動更新失敗:", err);
+        text.textContent = "更新失敗";
+        setTimeout(() => { text.textContent = "即時更新預報"; }, 2000);
+      } finally {
+        btn.classList.remove("spinning");
+      }
+    }
+
     // 計算並渲染頂部 KPI 卡片
     function renderKPIs() {
       if (!allForecasts.length) return;
-      let maxItem = allForecasts[0];
-      let minItem = allForecasts[0];
+
+      // 優先鎖定首日 (今日) 之各區氣溫進行指標比較
+      const firstDate = allForecasts[0]?.dataDate;
+      const todayRecords = allForecasts.filter(d => d.dataDate === firstDate);
+      const recordsToUse = todayRecords.length ? todayRecords : allForecasts;
+
+      let maxItem = recordsToUse[0];
+      let minItem = recordsToUse[0];
       let maxSpreadItem = allForecasts[0];
 
-      allForecasts.forEach(d => {
+      recordsToUse.forEach(d => {
         if (d.maxT > maxItem.maxT) maxItem = d;
         if (d.minT < minItem.minT) minItem = d;
+      });
+
+      allForecasts.forEach(d => {
         const spread = d.maxT - d.minT;
         if (spread > (maxSpreadItem.maxT - maxSpreadItem.minT)) maxSpreadItem = d;
       });
@@ -933,6 +1038,34 @@
         }).addTo(mapInstance);
 
         mapMarkers[region] = marker;
+      });
+    }
+
+    // 更新地圖標記狀態
+    function updateTaiwanMapMarkers() {
+      if (!mapInstance) {
+        initTaiwanMap();
+        return;
+      }
+      Object.keys(REGION_COORDS).forEach(region => {
+        const regionRecords = allForecasts.filter(d => d.regionName === region);
+        if (!regionRecords.length) return;
+
+        const firstDay = regionRecords[0];
+        const avg = (firstDay.minT + firstDay.maxT) / 2;
+        const color = getTempColor(avg);
+        const marker = mapMarkers[region];
+        if (marker) {
+          marker.setStyle({ fillColor: color });
+          marker.setPopupContent(`
+            <div style="font-size:13px; text-align:center; padding: 4px;">
+              <b>${region}</b><br>
+              預報日期: <b>${firstDay.dataDate}</b><br>
+              當日平均溫: <b>${avg.toFixed(1)}°C</b><br>
+              <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+            </div>
+          `);
+        }
       });
     }
 

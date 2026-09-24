@@ -62,7 +62,7 @@ def init_db(db_path: str = DB_FILE) -> None:
 def save_forecasts(
     forecasts: List[Dict[str, Any]],
     db_path: str = DB_FILE,
-    clear_existing: bool = False
+    clear_existing: bool = True
 ) -> int:
     """
     將清洗後的氣溫資料存入 SQLite 資料庫中。
