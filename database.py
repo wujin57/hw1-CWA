@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
     dataDate TEXT,
     minT REAL,
     maxT REAL,
-    pop REAL DEFAULT 0
+    pop REAL DEFAULT 0,
+    uvi REAL DEFAULT 5.0,
+    ci TEXT DEFAULT '舒適'
 );
 """
 
@@ -53,11 +55,15 @@ def init_db(db_path: str = DB_FILE) -> None:
             cursor = conn.cursor()
             cursor.execute(CREATE_TABLE_SQL)
             cursor.execute(CREATE_INDEX_SQL)
-            # 確保舊資料表具備 pop 欄位 (向下相容)
+            # 確保舊資料表具備 pop, uvi, ci 欄位 (向下相容自動遷移)
             cursor.execute(f"PRAGMA table_info({TABLE_NAME});")
             cols = [row["name"] for row in cursor.fetchall()]
             if "pop" not in cols:
                 cursor.execute(f"ALTER TABLE {TABLE_NAME} ADD COLUMN pop REAL DEFAULT 0;")
+            if "uvi" not in cols:
+                cursor.execute(f"ALTER TABLE {TABLE_NAME} ADD COLUMN uvi REAL DEFAULT 5.0;")
+            if "ci" not in cols:
+                cursor.execute(f"ALTER TABLE {TABLE_NAME} ADD COLUMN ci TEXT DEFAULT '舒適';")
             conn.commit()
             print(f"[+] 資料庫初始化成功: {os.path.abspath(db_path)} (資料表: {TABLE_NAME})")
     except sqlite3.Error as e:
@@ -71,11 +77,11 @@ def save_forecasts(
     clear_existing: bool = True
 ) -> int:
     """
-    將清洗後的氣溫與降雨資料存入 SQLite 資料庫中。
+    將清洗後的氣溫、降雨、紫外線指數與舒適度資料存入 SQLite 資料庫中。
     使用批次操作 (executemany) 與 INSERT OR REPLACE 兼顧效能與防重入。
 
     Args:
-        forecasts (List[Dict[str, Any]]): 氣象預報清單，每筆包含 regionName, dataDate, minT, maxT, pop
+        forecasts (List[Dict[str, Any]]): 氣象預報清單，每筆包含 regionName, dataDate, minT, maxT, pop, uvi, ci
         db_path (str): SQLite 資料庫路徑
         clear_existing (bool): 是否先清空既有紀錄
 
@@ -90,8 +96,8 @@ def save_forecasts(
     init_db(db_path)
 
     insert_sql = f"""
-    INSERT OR REPLACE INTO {TABLE_NAME} (regionName, dataDate, minT, maxT, pop)
-    VALUES (?, ?, ?, ?, ?);
+    INSERT OR REPLACE INTO {TABLE_NAME} (regionName, dataDate, minT, maxT, pop, uvi, ci)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     """
 
     data_tuples = [
@@ -100,7 +106,9 @@ def save_forecasts(
             item["dataDate"],
             float(item["minT"]),
             float(item["maxT"]),
-            float(item.get("pop", 0.0))
+            float(item.get("pop", 0.0)),
+            float(item.get("uvi", 5.0)),
+            str(item.get("ci", "舒適"))
         )
         for item in forecasts
     ]
@@ -131,7 +139,7 @@ def query_forecasts(
     end_date: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
-    自 SQLite 資料庫查詢氣溫與降雨預報紀錄。
+    自 SQLite 資料庫查詢氣溫、降雨、紫外線指數與舒適度預報紀錄。
 
     Args:
         db_path (str): SQLite 資料庫路徑
@@ -160,7 +168,10 @@ def query_forecasts(
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     sql = f"""
-    SELECT id, regionName, dataDate, minT, maxT, COALESCE(pop, 0) AS pop
+    SELECT id, regionName, dataDate, minT, maxT,
+           COALESCE(pop, 0) AS pop,
+           COALESCE(uvi, 5.0) AS uvi,
+           COALESCE(ci, '舒適') AS ci
     FROM {TABLE_NAME}
     {where_clause}
     ORDER BY regionName ASC, dataDate ASC;
@@ -222,7 +233,9 @@ def main():
         print(f"  -> 共 {len(central_rows)} 筆預報:")
         for r in central_rows:
             pop_val = r["pop"] if "pop" in r.keys() else 0
-            print(f"     日期: {r['dataDate']} | 最低溫: {r['minT']:<4.1f}°C | 最高溫: {r['maxT']:<4.1f}°C | 降雨機率: {pop_val:<3.0f}%")
+            uvi_val = r["uvi"] if "uvi" in r.keys() else 5.0
+            ci_val = r["ci"] if "ci" in r.keys() else "舒適"
+            print(f"     日期: {r['dataDate']} | 氣溫: {r['minT']:<4.1f}~{r['maxT']:<4.1f}°C | 降雨: {pop_val:<2.0f}% | 紫外線: {uvi_val:<4.1f} | 體感: {ci_val}")
     print("=" * 62)
 
 

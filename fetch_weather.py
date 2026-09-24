@@ -136,6 +136,15 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
         "東南部地區": 35    # 台東陣雨，約 25% ~ 45%
     }
 
+    base_uvis = {
+        "北部地區": 6.8,     # 高量級
+        "東北部地區": 4.5,   # 中量級
+        "中部地區": 8.5,     # 過量級
+        "東部地區": 7.0,     # 高量級
+        "南部地區": 9.2,     # 過量級
+        "東南部地區": 8.0    # 過量級
+    }
+
     locations_list = []
     for region_name in TARGET_REGIONS:
         min_base, max_base = base_temps[region_name]
@@ -143,6 +152,8 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
         min_t_times = []
         max_t_times = []
         pop_times = []
+        uvi_times = []
+        ci_times = []
 
         for offset in range(7):
             day_date = today + timedelta(days=offset)
@@ -156,6 +167,24 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
             # 計算當日降雨機率 (每 5% 一個階層，範圍 10% ~ 90%)
             pop_calc = pop_base + ((offset * 7) % 25) - 10
             day_pop = int(max(10, min(90, round(pop_calc / 5.0) * 5)))
+
+            # 計算當日紫外線指數 (受降雨遮蔽與日照增益)
+            uvi_calc = base_uvis[region_name] - ((day_pop / 100.0) * 3.5) + ((offset * 0.4) % 1.2)
+            day_uvi = round(max(2.0, min(11.5, uvi_calc)), 1)
+
+            # 依氣溫與降雨計算舒適度指數 (CI)
+            if day_max >= 32.0:
+                day_ci = "悶熱"
+            elif day_max >= 28.0:
+                day_ci = "舒適至悶熱" if day_pop < 50 else "悶熱微濕"
+            elif day_max >= 24.0:
+                day_ci = "舒適宜人"
+            elif day_max >= 20.0:
+                day_ci = "涼爽舒適"
+            elif day_min < 16.0:
+                day_ci = "稍有寒意"
+            else:
+                day_ci = "舒適"
 
             min_t_times.append({
                 "startTime": start_time,
@@ -178,12 +207,28 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
                 "parameter": {"parameterName": str(day_pop), "parameterUnit": "百分比"}
             })
 
+            uvi_times.append({
+                "startTime": start_time,
+                "endTime": end_time,
+                "elementValue": [{"value": str(day_uvi), "measures": "紫外線指數"}],
+                "parameter": {"parameterName": str(day_uvi), "parameterUnit": "UVI"}
+            })
+
+            ci_times.append({
+                "startTime": start_time,
+                "endTime": end_time,
+                "elementValue": [{"value": day_ci, "measures": "舒適度描述"}],
+                "parameter": {"parameterName": day_ci, "parameterUnit": "舒適度"}
+            })
+
         locations_list.append({
             "locationName": region_name,
             "weatherElement": [
                 {"elementName": "MinT", "description": "最低溫度", "time": min_t_times},
                 {"elementName": "MaxT", "description": "最高溫度", "time": max_t_times},
-                {"elementName": "PoP", "description": "降雨機率", "time": pop_times}
+                {"elementName": "PoP", "description": "降雨機率", "time": pop_times},
+                {"elementName": "UVI", "description": "紫外線指數", "time": uvi_times},
+                {"elementName": "CI", "description": "舒適度指數", "time": ci_times}
             ]
         })
 

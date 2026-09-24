@@ -343,6 +343,214 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.6",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.8",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.8",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.8",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.8",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "4.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "4.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.8",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.8",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "6.0",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "6.0",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.1",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.1",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -657,6 +865,214 @@
                   "parameter": {
                     "parameterName": "25",
                     "parameterUnit": "百分比"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.2",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.2",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.5",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.5",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.6",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.6",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
                   }
                 }
               ]
@@ -977,6 +1393,214 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.7",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.7",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.0",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.0",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "9.1",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "9.1",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "8.1",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "8.1",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -1291,6 +1915,214 @@
                   "parameter": {
                     "parameterName": "80",
                     "parameterUnit": "百分比"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.2",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.2",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.5",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.5",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.5",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.5",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.0",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.0",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.5",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.5",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.7",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.7",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "2.0",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "2.0",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適宜人",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適宜人",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適宜人",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適宜人",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適宜人",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適宜人",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適宜人",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適宜人",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適宜人",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適宜人",
+                    "parameterUnit": "舒適度"
                   }
                 }
               ]
@@ -1611,6 +2443,214 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.6",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.8",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.8",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "4.9",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "4.9",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.8",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.8",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "6.0",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "6.0",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "5.1",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "5.1",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱微濕",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱微濕",
+                    "parameterUnit": "舒適度"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -1925,6 +2965,214 @@
                   "parameter": {
                     "parameterName": "40",
                     "parameterUnit": "百分比"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "UVI",
+              "description": "紫外線指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.1",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.1",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "6.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "6.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.4",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.4",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "7.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "7.6",
+                    "parameterUnit": "UVI"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "6.6",
+                      "measures": "紫外線指數"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "6.6",
+                    "parameterUnit": "UVI"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "CI",
+              "description": "舒適度指數",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "舒適至悶熱",
+                      "measures": "舒適度描述"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "舒適至悶熱",
+                    "parameterUnit": "舒適度"
                   }
                 }
               ]

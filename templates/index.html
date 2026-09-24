@@ -268,54 +268,253 @@
       to { transform: translateX(0); opacity: 1; }
     }
 
-    /* KPI Summary Row */
-    .kpi-row {
+    /* ================================================================= */
+    /* 4 Lifestyle Weather Metric Cards (生活氣象指標卡片) */
+    /* ================================================================= */
+    .metric-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
       margin-bottom: 28px;
     }
 
-    .kpi-card {
+    @media (max-width: 1080px) {
+      .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 16px 20px;
-      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 20px;
+      backdrop-filter: blur(14px);
       box-shadow: var(--glass-shadow);
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
-      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .kpi-card:hover {
+    .metric-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      opacity: 0.85;
+      transition: opacity 0.25s ease;
+    }
+
+    .metric-card:hover {
       border-color: var(--border-hover);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.65);
     }
 
-    .kpi-text .kpi-label {
-      font-size: 0.78rem;
-      font-weight: 600;
+    .metric-card.metric-temp::before { background: linear-gradient(90deg, #3b82f6, #ef4444); }
+    .metric-card.metric-pop::before { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+    .metric-card.metric-uvi::before { background: linear-gradient(90deg, #22c55e, #eab308, #f97316, #ef4444, #a855f7); }
+    .metric-card.metric-ci::before { background: linear-gradient(90deg, #10b981, #06b6d4); }
+
+    .metric-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .metric-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
       color: var(--text-muted);
+      letter-spacing: 0.6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
-    .kpi-text .kpi-val {
-      font-size: 1.65rem;
+    .metric-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .icon-temp {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .icon-pop {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .icon-uvi {
+      background: rgba(249, 115, 22, 0.12);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+    }
+
+    .icon-ci {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .metric-card-main {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric-main-value {
+      font-size: 1.85rem;
       font-weight: 800;
-      margin: 4px 0 2px;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
     }
 
-    .kpi-text .kpi-sub {
+    .temp-min { color: #60a5fa; }
+    .temp-divider { color: var(--text-muted); font-size: 1.3rem; margin: 0 2px; }
+    .temp-max { color: #f87171; }
+    .text-pop { color: #38bdf8; }
+    .text-ci { color: #34d399; font-size: 1.65rem; }
+
+    .metric-badge-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .badge-neutral {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+    }
+
+    /* UVI Colors */
+    .uvi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .uvi-low { background: rgba(34, 197, 94, 0.18); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; }
+    .uvi-mod { background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.4); color: #facc15; }
+    .uvi-high { background: rgba(249, 115, 22, 0.18); border: 1px solid rgba(249, 115, 22, 0.4); color: #fb923c; }
+    .uvi-very { background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; }
+    .uvi-ext { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.45); color: #c084fc; }
+
+    /* UVI Spectrum Visual Bar */
+    .uvi-spectrum-wrap {
+      position: relative;
+      margin: 8px 0 12px;
+      padding-top: 4px;
+    }
+
+    .uvi-spectrum-bar {
+      display: flex;
+      height: 6px;
+      border-radius: 9999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.08);
+      gap: 2px;
+    }
+
+    .uvi-level-seg {
+      flex: 1;
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .seg-low { background: #22c55e; }
+    .seg-mod { background: #eab308; }
+    .seg-high { background: #f97316; }
+    .seg-very { background: #ef4444; }
+    .seg-ext { background: #a855f7; }
+
+    .uvi-indicator {
+      position: absolute;
+      top: 0;
+      width: 10px;
+      height: 14px;
+      background: #ffffff;
+      border: 2px solid #0f172a;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      transform: translateX(-50%);
+      transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* PoP Progress Bar */
+    .metric-progress-wrap {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 8px 0 12px;
+    }
+
+    .metric-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #0284c7);
+      border-radius: 9999px;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .metric-card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+
+    .metric-footer-text {
       font-size: 0.78rem;
       color: var(--text-sub);
-    }
-
-    .kpi-icon {
-      font-size: 1.8rem;
-      opacity: 0.85;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     /* Section Cards */
@@ -738,42 +937,130 @@
 
   <main class="container">
 
-    <!-- KPI Summary Row -->
-    <section class="kpi-row">
-      <div class="kpi-card">
-        <div class="kpi-text">
-          <div class="kpi-label">今日最高氣溫</div>
-          <div class="kpi-val text-maxt" id="kpi-maxt">--°C</div>
-          <div class="kpi-sub" id="kpi-maxt-reg">全區最高</div>
+    <!-- 4 Lifestyle Weather Metric Cards (生活氣象指標卡片) -->
+    <section class="metric-grid">
+      <!-- Card 1: 今日氣溫區間 -->
+      <div class="metric-card metric-temp" id="card-temp">
+        <div class="metric-card-top">
+          <div class="metric-header">
+            <span class="metric-tag">今日氣溫區間</span>
+            <h4 class="metric-title" id="metric-temp-reg">全台氣溫概況</h4>
+          </div>
+          <div class="metric-icon-wrap icon-temp">
+            <!-- Lucide Thermometer SVG -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-icon">☀️</div>
+        <div class="metric-card-main">
+          <div class="metric-main-value">
+            <span class="temp-min" id="metric-mint">--°</span>
+            <span class="temp-divider">~</span>
+            <span class="temp-max" id="metric-maxt">--°C</span>
+          </div>
+          <div class="metric-badge-pill badge-neutral" id="metric-temp-diff">溫差 --°C</div>
+        </div>
+        <div class="metric-card-footer">
+          <span class="metric-footer-text" id="metric-temp-sub">均溫 --°C · 正在計算全區氣溫...</span>
+        </div>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-text">
-          <div class="kpi-label">今日最低氣溫</div>
-          <div class="kpi-val text-mint" id="kpi-mint">--°C</div>
-          <div class="kpi-sub" id="kpi-mint-reg">全區最低</div>
+      <!-- Card 2: 降雨機率 (PoP) -->
+      <div class="metric-card metric-pop" id="card-pop">
+        <div class="metric-card-top">
+          <div class="metric-header">
+            <span class="metric-tag">降雨機率 (PoP)</span>
+            <h4 class="metric-title" id="metric-pop-reg">出門降雨警戒</h4>
+          </div>
+          <div class="metric-icon-wrap icon-pop">
+            <!-- Lucide Cloud Rain SVG -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="16" y1="13" x2="16" y2="21"></line>
+              <line x1="8" y1="13" x2="8" y2="21"></line>
+              <line x1="12" y1="15" x2="12" y2="23"></line>
+              <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-icon">❄️</div>
+        <div class="metric-card-main">
+          <div class="metric-main-value text-pop" id="metric-pop-val">--%</div>
+          <div class="metric-badge-pill" id="metric-pop-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">降雨分析中</div>
+        </div>
+        <div class="metric-progress-wrap">
+          <div class="metric-progress-bar" id="metric-pop-bar" style="width: 0%;"></div>
+        </div>
+        <div class="metric-card-footer">
+          <span class="metric-footer-text" id="metric-pop-advice">載入雨具準備指南...</span>
+        </div>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-text">
-          <div class="kpi-label">今日最高降雨機率</div>
-          <div class="kpi-val" style="color: #38bdf8;" id="kpi-pop">--%</div>
-          <div class="kpi-sub" id="kpi-pop-reg">全區降雨警戒</div>
+      <!-- Card 3: 紫外線指數 (UVI) -->
+      <div class="metric-card metric-uvi" id="card-uvi">
+        <div class="metric-card-top">
+          <div class="metric-header">
+            <span class="metric-tag">紫外線指數 (UVI)</span>
+            <h4 class="metric-title" id="metric-uvi-reg">紫外線防護等級</h4>
+          </div>
+          <div class="metric-icon-wrap icon-uvi">
+            <!-- Lucide Sun SVG -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-icon">🌧️</div>
+        <div class="metric-card-main">
+          <div class="metric-main-value" id="metric-uvi-val" style="color: #fb923c;">--</div>
+          <div class="metric-badge-pill uvi-badge uvi-mod" id="metric-uvi-level">檢測中</div>
+        </div>
+        <!-- 5 段色彩光譜進度條 (低量/中量/高量/過量/危險) -->
+        <div class="uvi-spectrum-wrap">
+          <div class="uvi-spectrum-bar" title="紫外線色階：綠(0-2低量) / 黃(3-5中量) / 橘(6-7高量) / 紅(8-10過量) / 紫(11+危險)">
+            <div class="uvi-level-seg seg-low"></div>
+            <div class="uvi-level-seg seg-mod"></div>
+            <div class="uvi-level-seg seg-high"></div>
+            <div class="uvi-level-seg seg-very"></div>
+            <div class="uvi-level-seg seg-ext"></div>
+          </div>
+          <div class="uvi-indicator" id="uvi-indicator-pin" style="left: 0%;"></div>
+        </div>
+        <div class="metric-card-footer">
+          <span class="metric-footer-text" id="metric-uvi-advice">正在載入外出防曬建議...</span>
+        </div>
       </div>
 
-      <div class="kpi-card">
-        <div class="kpi-text">
-          <div class="kpi-label">預報涵蓋範疇</div>
-          <div class="kpi-val" style="color: #10b981;">6 區 • 7 天</div>
-          <div class="kpi-sub">共 42 筆預報紀錄</div>
+      <!-- Card 4: 舒適度 / 體感狀態 (CI) -->
+      <div class="metric-card metric-ci" id="card-ci">
+        <div class="metric-card-top">
+          <div class="metric-header">
+            <span class="metric-tag">舒適度 / 體感 (CI)</span>
+            <h4 class="metric-title" id="metric-ci-reg">人體感受狀態</h4>
+          </div>
+          <div class="metric-icon-wrap icon-ci">
+            <!-- Lucide Sparkles / Wind SVG -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-icon">📊</div>
+        <div class="metric-card-main">
+          <div class="metric-main-value text-ci" id="metric-ci-val">--</div>
+          <div class="metric-badge-pill" id="metric-ci-badge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399;">舒適</div>
+        </div>
+        <div class="metric-progress-wrap" style="background: rgba(16, 185, 129, 0.1);">
+          <div class="metric-progress-bar" id="metric-ci-bar" style="width: 75%; background: linear-gradient(90deg, #10b981, #06b6d4);"></div>
+        </div>
+        <div class="metric-card-footer">
+          <span class="metric-footer-text" id="metric-ci-advice">穿著建議載入中...</span>
+        </div>
       </div>
     </section>
 
@@ -832,10 +1119,12 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>MinT</th>
-                  <th>MaxT</th>
+                  <th>預報日期</th>
+                  <th>最低溫 (MinT)</th>
+                  <th>最高溫 (MaxT)</th>
                   <th>降雨機率 (PoP)</th>
+                  <th>紫外線 (UVI)</th>
+                  <th>體感狀態 (CI)</th>
                 </tr>
               </thead>
               <tbody id="table-body">
@@ -849,7 +1138,7 @@
       <!-- 顯示執行的 SQL 查詢語法 -->
       <div class="sql-box">
         <span>⚡ <b>後端執行 SQL 查詢：</b></span>
-        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT, pop FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
+        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT, pop, uvi, ci FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
       </div>
     </section>
 
@@ -946,8 +1235,11 @@
               <b>降雨機率 (PoP)：</b><span id="detail-pop" style="color: #38bdf8; font-weight: 800;">--%</span> <span id="detail-pop-desc" style="font-size: 0.8rem; color: #94a3b8;"></span><br>
               <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">--°C</span><br>
               <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">--°C</span><br>
-              <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">--°C</span>
+              <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">--°C</span><br>
+              <b>紫外線 (UVI)：</b><span id="detail-uvi" style="font-weight: 800; color: #fb923c;">--</span> <span id="detail-uvi-badge" class="uvi-badge uvi-mod" style="font-size: 0.68rem; padding: 1px 7px;">--</span><br>
+              <b>體感狀態 (CI)：</b><span id="detail-ci" style="color: #34d399; font-weight: 700;">--</span>
               <div id="detail-landmark" class="landmark-tag">📍 所屬分區：中部地區整體概況</div>
+              <div id="detail-advice" style="font-size: 0.78rem; color: #cbd5e1; margin-top: 8px; padding: 7px 10px; background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid #f59e0b; line-height: 1.4;">💡 防曬與穿著建議載入中...</div>
             </div>
           </div>
         </div>
@@ -1184,11 +1476,108 @@
       return "⛈️";
     }
 
-    // 計算細部行政區即時天氣數值
+    // =================================================================
+    // 生活氣象指標核心運算 (UVI 紫外線, CI 舒適度, PoP 降雨指引)
+    // =================================================================
+    function getUviDetails(val) {
+      const uvi = parseFloat(val) || 0;
+      if (uvi <= 2.9) {
+        return {
+          level: "低量級",
+          en: "Low",
+          color: "#22c55e",
+          badgeClass: "uvi-low",
+          percent: Math.min(100, Math.max(8, (uvi / 12) * 100)),
+          advice: "紫外線偏低，可安心進行戶外活動，佩戴基本遮陽帽即可。"
+        };
+      } else if (uvi <= 5.9) {
+        return {
+          level: "中量級",
+          en: "Moderate",
+          color: "#eab308",
+          badgeClass: "uvi-mod",
+          percent: Math.min(100, (uvi / 12) * 100),
+          advice: "外出建議戴遮陽帽、撐陽傘或著薄長袖，並塗抹 SPF 15+ 防曬乳。"
+        };
+      } else if (uvi <= 7.9) {
+        return {
+          level: "高量級",
+          en: "High",
+          color: "#f97316",
+          badgeClass: "uvi-high",
+          percent: Math.min(100, (uvi / 12) * 100),
+          advice: "曝曬 30 分鐘內易曬傷！請配戴太陽眼鏡、防曬帽，中午減少豔陽曝曬。"
+        };
+      } else if (uvi <= 10.9) {
+        return {
+          level: "過量級",
+          en: "Very High",
+          color: "#ef4444",
+          badgeClass: "uvi-very",
+          percent: Math.min(100, (uvi / 12) * 100),
+          advice: "曝曬 20 分鐘即可能曬傷！上午 10 時至下午 2 時儘量避免戶外曝曬，塗抹 SPF 30+。"
+        };
+      } else {
+        return {
+          level: "危險級",
+          en: "Extreme",
+          color: "#a855f7",
+          badgeClass: "uvi-ext",
+          percent: Math.min(100, (uvi / 12) * 100),
+          advice: "危險等級！曝曬 15 分鐘內即曬傷，避免在烈日下活動，務必做好全套物理防曬！"
+        };
+      }
+    }
+
+    function getCiDetails(ciText, minT, maxT) {
+      let desc = ciText || "舒適";
+      let advice = "氣溫適中宜人，穿著一般透氣短袖搭配薄衫即可。";
+      let color = "#34d399";
+      let bg = "rgba(16, 185, 129, 0.15)";
+      let percent = 60;
+
+      if (desc.includes("悶熱") || maxT >= 31.5) {
+        desc = desc || "悶熱";
+        color = "#f97316";
+        bg = "rgba(249, 115, 22, 0.15)";
+        advice = "體感悶熱易出汗，建議穿著透氣排汗短袖，多補充水分預防熱傷害。";
+        percent = 85;
+      } else if (desc.includes("舒適至悶熱") || maxT >= 28) {
+        desc = desc || "舒適至悶熱";
+        color = "#facc15";
+        bg = "rgba(234, 179, 8, 0.15)";
+        advice = "日間偏暖微熱，早晚舒適，室內冷氣房建議備薄外套防著涼。";
+        percent = 70;
+      } else if (desc.includes("涼爽") || (maxT < 24 && minT >= 18)) {
+        desc = desc || "涼爽舒適";
+        color = "#38bdf8";
+        bg = "rgba(56, 189, 248, 0.15)";
+        advice = "早晚微涼舒適，適合戶外運動散步，外出建議備一件薄外套。";
+        percent = 50;
+      } else if (desc.includes("寒") || minT < 17) {
+        desc = desc || "稍有寒意";
+        color = "#818cf8";
+        bg = "rgba(129, 140, 248, 0.15)";
+        advice = "早晚氣溫較低有涼意，建議洋蔥式穿搭並攜帶防風保暖外套。";
+        percent = 35;
+      }
+
+      return { desc, advice, color, bg, percent };
+    }
+
+    function getPopAdvice(popVal) {
+      const p = parseInt(popVal) || 0;
+      if (p >= 70) return "🌧️ 降雨警戒偏高，出門務必攜帶雨具，路面濕滑注意行車安全。";
+      if (p >= 40) return "🌦️ 局部短暫降雨機率高，出門建議隨身攜帶折疊傘以防萬一。";
+      if (p >= 20) return "⛅ 天氣多雲偶陰，大部分時間適宜戶外活動，攜小傘更安心。";
+      return "☀️ 今日降雨機率低，晴朗穩定，非常適宜戶外休閒與運動！";
+    }
+
+    // 計算細部行政區即時天氣數值 (包含微氣候 UVI 與 CI)
     function getDistrictWeather(dist, dateStr) {
       const parentRecord = allForecasts.find(d => d.regionName === dist.region && d.dataDate === dateStr)
         || allForecasts.find(d => d.regionName === dist.region)
-        || { minT: 22.0, maxT: 30.0, pop: 20.0 };
+        || { minT: 22.0, maxT: 30.0, pop: 20.0, uvi: 7.0, ci: "舒適" };
 
       const rawPop = (parentRecord.pop !== undefined ? parentRecord.pop : 20) + (dist.popOffset || 0);
       const pop = Math.max(5, Math.min(95, Math.round(rawPop / 5.0) * 5));
@@ -1196,6 +1585,9 @@
       const maxT = parseFloat((parentRecord.maxT + (dist.tempOffset || 0)).toFixed(1));
       const avg = parseFloat(((minT + maxT) / 2).toFixed(1));
       const spread = parseFloat((maxT - minT).toFixed(1));
+      const rawUvi = (parentRecord.uvi !== undefined ? parentRecord.uvi : 7.0) - ((dist.popOffset || 0) * 0.04) + ((dist.tempOffset || 0) * 0.2);
+      const uvi = parseFloat(Math.max(1.0, Math.min(12.0, rawUvi)).toFixed(1));
+      const ci = parentRecord.ci || (maxT >= 31.5 ? "悶熱" : (maxT >= 28 ? "舒適至悶熱" : "舒適宜人"));
 
       return {
         ...dist,
@@ -1204,7 +1596,9 @@
         minT,
         maxT,
         avg,
-        spread
+        spread,
+        uvi,
+        ci
       };
     }
 
@@ -1288,8 +1682,13 @@
 
     // 2. 骨架屏狀態切換 (Skeleton Loading State)
     function toggleSkeleton(show) {
-      const kpiIds = ["kpi-maxt", "kpi-mint", "kpi-pop", "kpi-spread"];
-      kpiIds.forEach(id => {
+      const metricIds = [
+        "metric-mint", "metric-maxt", "metric-temp-diff",
+        "metric-pop-val", "metric-pop-badge",
+        "metric-uvi-val", "metric-uvi-level",
+        "metric-ci-val", "metric-ci-badge"
+      ];
+      metricIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
           if (show) el.classList.add("skeleton");
@@ -1380,7 +1779,7 @@
           populateMapControls();
           renderLegend();
           toggleSkeleton(false);
-          renderKPIs();
+          renderKPIs(currentSelectedRegion);
           renderRegionView(currentSelectedRegion);
           initTaiwanMap();
           updateTaiwanMapMarkers();
@@ -1411,7 +1810,7 @@
             updateDateBadges(cJson.today);
             populateMapControls();
             renderLegend();
-            renderKPIs();
+            renderKPIs(currentSelectedRegion);
             renderRegionView(currentSelectedRegion);
             initTaiwanMap();
             showToast("⚠️ 目前網路異常，已自動為您載入先前暫存之離線氣象預報", "warning", 4500);
@@ -1440,7 +1839,7 @@
             updateDateBadges(cJson.today);
             populateMapControls();
             renderLegend();
-            renderKPIs();
+            renderKPIs(currentSelectedRegion);
             renderRegionView(currentSelectedRegion);
             initTaiwanMap();
             hasCached = true;
@@ -1648,7 +2047,8 @@
         }, 300);
       }
 
-      // 更新右側詳情卡片
+      // 更新生活氣象指標卡片與右側詳情卡片
+      renderKPIs(dist);
       updateDetailCardForDistrict(dist);
 
       // 同步下拉選單選取狀態
@@ -1721,33 +2121,131 @@
       }
     }
 
-    // 計算並渲染頂部 KPI 卡片
-    function renderKPIs() {
+    // 計算並渲染頂部 4 大生活氣象指標卡片 (支援全台總覽、特定區域與細部行政區)
+    function renderKPIs(target) {
       if (!allForecasts.length) return;
 
       const firstDate = allForecasts[0]?.dataDate;
       const todayRecords = allForecasts.filter(d => d.dataDate === firstDate);
       const recordsToUse = todayRecords.length ? todayRecords : allForecasts;
 
-      let maxItem = recordsToUse[0];
-      let minItem = recordsToUse[0];
-      let maxPopItem = recordsToUse[0];
+      let minT, maxT, popVal, uviVal, ciText;
+      let tempTitle, popTitle, uviTitle, ciTitle;
+      let tempSub, popBadgeText;
 
-      recordsToUse.forEach(d => {
-        if (d.maxT > maxItem.maxT) maxItem = d;
-        if (d.minT < minItem.minT) minItem = d;
-        if ((d.pop || 0) > (maxPopItem.pop || 0)) maxPopItem = d;
-      });
+      // 情況 A：指定細部行政區 (例如西屯區物件)
+      if (target && typeof target === 'object' && target.fullName) {
+        const weather = getDistrictWeather(target, firstDate);
+        minT = weather.minT;
+        maxT = weather.maxT;
+        popVal = weather.pop;
+        uviVal = weather.uvi || 7.5;
+        ciText = weather.ci || "舒適";
 
-      document.getElementById("kpi-maxt").textContent = `${maxItem.maxT}°C`;
-      document.getElementById("kpi-maxt-reg").textContent = `${maxItem.regionName} (${maxItem.dataDate.slice(5)})`;
+        tempTitle = `${target.name} 氣溫`;
+        popTitle = `${target.name} 降雨警戒`;
+        uviTitle = `${target.name} 紫外線防護`;
+        ciTitle = `${target.name} 體感狀態`;
 
-      document.getElementById("kpi-mint").textContent = `${minItem.minT}°C`;
-      document.getElementById("kpi-mint-reg").textContent = `${minItem.regionName} (${minItem.dataDate.slice(5)})`;
+        const diff = (maxT - minT).toFixed(1);
+        const avg = ((maxT + minT) / 2).toFixed(1);
+        tempSub = `均溫 ${avg}°C · ${target.city} (${target.landmark.split('、')[0]})`;
+        popBadgeText = getPopDescription(popVal).slice(0, 4);
+      }
+      // 情況 B：指定特定六大分區 (例如 '中部地區')
+      else if (target && typeof target === 'string' && target !== 'ALL' && !target.startsWith('DISTRICT:')) {
+        const regRecord = recordsToUse.find(d => d.regionName === target) || recordsToUse[0];
+        minT = regRecord.minT;
+        maxT = regRecord.maxT;
+        popVal = regRecord.pop !== undefined ? regRecord.pop : 0;
+        uviVal = regRecord.uvi !== undefined ? regRecord.uvi : 7.5;
+        ciText = regRecord.ci || "舒適";
 
-      const maxPopVal = maxPopItem.pop !== undefined ? maxPopItem.pop : 0;
-      document.getElementById("kpi-pop").textContent = `${maxPopVal}%`;
-      document.getElementById("kpi-pop-reg").textContent = `${maxPopItem.regionName} (${getPopDescription(maxPopVal).slice(0, 4)})`;
+        tempTitle = `${target} 氣溫`;
+        popTitle = `${target} 降雨警戒`;
+        uviTitle = `${target} 紫外線防護`;
+        ciTitle = `${target} 體感狀態`;
+
+        const diff = (maxT - minT).toFixed(1);
+        const avg = ((maxT + minT) / 2).toFixed(1);
+        tempSub = `均溫 ${avg}°C · 日夜溫差 ${diff >= 8 ? '顯著，早晚注意添衣' : '適中舒適'}`;
+        popBadgeText = getPopDescription(popVal).slice(0, 4);
+      }
+      // 情況 C：全台綜合預報 (預設)
+      else {
+        let maxItem = recordsToUse[0];
+        let minItem = recordsToUse[0];
+        let maxPopItem = recordsToUse[0];
+        let maxUviItem = recordsToUse[0];
+
+        recordsToUse.forEach(d => {
+          if (d.maxT > maxItem.maxT) maxItem = d;
+          if (d.minT < minItem.minT) minItem = d;
+          if ((d.pop || 0) > (maxPopItem.pop || 0)) maxPopItem = d;
+          if ((d.uvi || 0) > (maxUviItem.uvi || 0)) maxUviItem = d;
+        });
+
+        minT = minItem.minT;
+        maxT = maxItem.maxT;
+        popVal = maxPopItem.pop !== undefined ? maxPopItem.pop : 0;
+        uviVal = maxUviItem.uvi !== undefined ? maxUviItem.uvi : 8.0;
+        ciText = maxItem.ci || "舒適宜人";
+
+        tempTitle = `全台綜合氣溫`;
+        popTitle = `全台降雨警戒`;
+        uviTitle = `全台最高紫外線`;
+        ciTitle = `全台人體感受`;
+
+        const diff = (maxT - minT).toFixed(1);
+        tempSub = `最高 ${maxItem.regionName} ${maxItem.maxT}°C · 最低 ${minItem.regionName} ${minItem.minT}°C`;
+        popBadgeText = `${maxPopItem.regionName} (${getPopDescription(popVal).slice(0, 4)})`;
+      }
+
+      // 1. 填入氣溫卡片
+      document.getElementById("metric-temp-reg").textContent = tempTitle;
+      document.getElementById("metric-mint").textContent = `${minT}°`;
+      document.getElementById("metric-maxt").textContent = `${maxT}°C`;
+      document.getElementById("metric-temp-diff").textContent = `溫差 ${(maxT - minT).toFixed(1)}°C`;
+      document.getElementById("metric-temp-sub").textContent = tempSub;
+
+      // 2. 填入降雨機率卡片
+      document.getElementById("metric-pop-reg").textContent = popTitle;
+      document.getElementById("metric-pop-val").textContent = `${popVal}%`;
+      const popBadgeEl = document.getElementById("metric-pop-badge");
+      popBadgeEl.textContent = popBadgeText;
+      const popColor = getPopColor(popVal);
+      popBadgeEl.style.color = popColor;
+      popBadgeEl.style.borderColor = popColor + "55";
+      popBadgeEl.style.background = popColor + "22";
+      document.getElementById("metric-pop-bar").style.width = `${Math.max(6, popVal)}%`;
+      document.getElementById("metric-pop-bar").style.background = popVal >= 70
+        ? "linear-gradient(90deg, #f59e0b, #ef4444)"
+        : (popVal >= 40 ? "linear-gradient(90deg, #38bdf8, #f59e0b)" : "linear-gradient(90deg, #22c55e, #38bdf8)");
+      document.getElementById("metric-pop-advice").textContent = getPopAdvice(popVal);
+
+      // 3. 填入紫外線指數卡片
+      const uviInfo = getUviDetails(uviVal);
+      document.getElementById("metric-uvi-reg").textContent = uviTitle;
+      document.getElementById("metric-uvi-val").textContent = parseFloat(uviVal).toFixed(1);
+      document.getElementById("metric-uvi-val").style.color = uviInfo.color;
+      const uviBadgeEl = document.getElementById("metric-uvi-level");
+      uviBadgeEl.textContent = `${uviInfo.level} (${uviInfo.en})`;
+      uviBadgeEl.className = `metric-badge-pill uvi-badge ${uviInfo.badgeClass}`;
+      document.getElementById("uvi-indicator-pin").style.left = `${Math.min(94, Math.max(6, uviInfo.percent))}%`;
+      document.getElementById("metric-uvi-advice").textContent = uviInfo.advice;
+
+      // 4. 填入舒適度卡片
+      const ciInfo = getCiDetails(ciText, minT, maxT);
+      document.getElementById("metric-ci-reg").textContent = ciTitle;
+      document.getElementById("metric-ci-val").textContent = ciInfo.desc;
+      document.getElementById("metric-ci-val").style.color = ciInfo.color;
+      const ciBadgeEl = document.getElementById("metric-ci-badge");
+      ciBadgeEl.textContent = ciText;
+      ciBadgeEl.style.color = ciInfo.color;
+      ciBadgeEl.style.background = ciInfo.bg;
+      ciBadgeEl.style.borderColor = ciInfo.color + "55";
+      document.getElementById("metric-ci-bar").style.width = `${ciInfo.percent}%`;
+      document.getElementById("metric-ci-advice").textContent = ciInfo.advice;
     }
 
     // 下拉選單變更時觸發
@@ -1755,6 +2253,7 @@
       const select = document.getElementById("region-select");
       currentSelectedRegion = select.value;
       currentSelectedDistrict = null;
+      renderKPIs(currentSelectedRegion);
       renderRegionView(currentSelectedRegion);
       const popSelect = document.getElementById("map-pop-select");
       if (popSelect) popSelect.value = currentSelectedRegion;
@@ -1768,7 +2267,7 @@
 
       // 1. 更新 SQL 顯示
       document.getElementById("sql-text").textContent = 
-        `SELECT id, regionName, dataDate, minT, maxT, pop FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
+        `SELECT id, regionName, dataDate, minT, maxT, pop, uvi, ci FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
 
       // 2. 更新折線圖標題
       if (currentSelectedDistrict) {
@@ -1827,18 +2326,23 @@
       chartInstance = new ApexCharts(document.getElementById("apex-chart-container"), chartOptions);
       chartInstance.render();
 
-      // 4. 渲染右側表格 (Date, MinT, MaxT, PoP)
+      // 4. 渲染右側表格 (Date, MinT, MaxT, PoP, UVI, CI)
       const tbody = document.getElementById("table-body");
       tbody.innerHTML = "";
       regionData.forEach(row => {
         const pop = row.pop !== undefined ? row.pop : 0;
         const popClass = pop >= 70 ? 'badge-pop-high' : (pop >= 40 ? 'badge-pop-med' : 'badge-pop-low');
+        const uvi = row.uvi !== undefined ? row.uvi : 5.0;
+        const uviInfo = getUviDetails(uvi);
+        const ci = row.ci || "舒適";
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.dataDate}</td>
           <td class="text-mint">${row.minT}°C</td>
           <td class="text-maxt">${row.maxT}°C</td>
           <td><span class="pop-badge ${popClass}">🌧️ ${pop}%</span></td>
+          <td><span class="uvi-badge ${uviInfo.badgeClass}">☀️ ${uvi} ${uviInfo.level}</span></td>
+          <td><span style="font-weight: 700; color: #34d399;">${ci}</span></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1856,6 +2360,10 @@
       const pop = dayData.pop !== undefined ? dayData.pop : 0;
       const avg = ((dayData.minT + dayData.maxT) / 2).toFixed(1);
       const spread = (dayData.maxT - dayData.minT).toFixed(1);
+      const uvi = dayData.uvi !== undefined ? dayData.uvi : 7.0;
+      const uviInfo = getUviDetails(uvi);
+      const ci = dayData.ci || "舒適";
+      const ciInfo = getCiDetails(ci, dayData.minT, dayData.maxT);
       const popColor = getPopColor(pop);
       const tempColor = getTempColor(parseFloat(avg));
 
@@ -1866,6 +2374,25 @@
       document.getElementById("detail-mint").textContent = `${dayData.minT}°C`;
       document.getElementById("detail-maxt").textContent = `${dayData.maxT}°C`;
       document.getElementById("detail-spread").textContent = `${spread}°C`;
+
+      const uviEl = document.getElementById("detail-uvi");
+      if (uviEl) uviEl.textContent = parseFloat(uvi).toFixed(1);
+      const uviBadge = document.getElementById("detail-uvi-badge");
+      if (uviBadge) {
+        uviBadge.textContent = `${uviInfo.level} (${uviInfo.en})`;
+        uviBadge.className = `uvi-badge ${uviInfo.badgeClass}`;
+      }
+
+      const ciEl = document.getElementById("detail-ci");
+      if (ciEl) {
+        ciEl.textContent = ci;
+        ciEl.style.color = ciInfo.color;
+      }
+
+      const adviceDiv = document.getElementById("detail-advice");
+      if (adviceDiv) {
+        adviceDiv.innerHTML = `☀️ <b>防曬指引</b>：${uviInfo.advice}<br>🍃 <b>穿著建議</b>：${ciInfo.advice}`;
+      }
 
       const landmarkDiv = document.getElementById("detail-landmark");
       if (landmarkDiv) {
@@ -1889,6 +2416,8 @@
       const weather = getDistrictWeather(dist, currentMapDate);
       const popColor = getPopColor(weather.pop);
       const tempColor = getTempColor(weather.avg);
+      const uviInfo = getUviDetails(weather.uvi);
+      const ciInfo = getCiDetails(weather.ci, weather.minT, weather.maxT);
 
       document.getElementById("detail-reg-name").textContent = dist.fullName;
       document.getElementById("detail-date").textContent = currentMapDate;
@@ -1897,6 +2426,25 @@
       document.getElementById("detail-mint").textContent = `${weather.minT}°C`;
       document.getElementById("detail-maxt").textContent = `${weather.maxT}°C`;
       document.getElementById("detail-spread").textContent = `${weather.spread}°C`;
+
+      const uviEl = document.getElementById("detail-uvi");
+      if (uviEl) uviEl.textContent = parseFloat(weather.uvi).toFixed(1);
+      const uviBadge = document.getElementById("detail-uvi-badge");
+      if (uviBadge) {
+        uviBadge.textContent = `${uviInfo.level} (${uviInfo.en})`;
+        uviBadge.className = `uvi-badge ${uviInfo.badgeClass}`;
+      }
+
+      const ciEl = document.getElementById("detail-ci");
+      if (ciEl) {
+        ciEl.textContent = weather.ci;
+        ciEl.style.color = ciInfo.color;
+      }
+
+      const adviceDiv = document.getElementById("detail-advice");
+      if (adviceDiv) {
+        adviceDiv.innerHTML = `☀️ <b>${dist.name} 防曬指引</b>：${uviInfo.advice}<br>🍃 <b>穿著建議</b>：${ciInfo.advice}`;
+      }
 
       const landmarkDiv = document.getElementById("detail-landmark");
       if (landmarkDiv) {
@@ -1974,6 +2522,10 @@
         const avg = (record.minT + record.maxT) / 2;
         const color = currentMapMode === "pop" ? getPopColor(pop) : getTempColor(avg);
 
+        const uvi = record.uvi !== undefined ? record.uvi : 7.0;
+        const uviInfo = getUviDetails(uvi);
+        const ci = record.ci || "舒適";
+
         // 圓點標記
         const marker = L.circleMarker([coords.lat, coords.lng], {
           radius: 14,
@@ -1989,6 +2541,7 @@
             <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
             🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
             🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
+            ☀️ 紫外線: <b>${uvi}</b> (${uviInfo.level}) · 🧘 體感: <b>${ci}</b><br>
             <span style="color:#0284c7; font-size:11px;">🔍 滾輪放大可檢視該區細部市轄區</span>
           </div>
         `);
@@ -1999,6 +2552,7 @@
           if (popSelect) popSelect.value = region;
           currentSelectedDistrict = null;
           currentSelectedRegion = region;
+          renderKPIs(region);
           renderRegionView(region);
           focusMapRegion(region);
         });
@@ -2021,6 +2575,7 @@
       DISTRICT_DATA.forEach(dist => {
         const weather = getDistrictWeather(dist, currentMapDate);
         const color = currentMapMode === "pop" ? getPopColor(weather.pop) : getTempColor(weather.avg);
+        const uviInfo = getUviDetails(weather.uvi);
 
         // 細部行政區標記 (初始不加到地圖，縮放 >= 9 時自動顯示)
         const dMarker = L.circleMarker([dist.lat, dist.lng], {
@@ -2037,8 +2592,9 @@
             <b style="font-size:14px; color:#38bdf8;">📍 ${dist.fullName}</b><br>
             🌧️ 降雨機率: <b>${weather.pop}%</b> (${getPopDescription(weather.pop)})<br>
             🌡️ 氣溫: <b>${weather.minT}°C ~ ${weather.maxT}°C</b> (均溫 ${weather.avg}°C)<br>
+            ☀️ 紫外線: <b>${weather.uvi}</b> (${uviInfo.level}) · 🧘 體感: <b>${weather.ci}</b><br>
             🏢 代表地標: <span style="color:#cbd5e1; font-size:11px;">${dist.landmark}</span><br>
-            <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+            <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表與生活指標</span>
           </div>
         `);
 
@@ -2078,6 +2634,9 @@
 
         const pop = record.pop !== undefined ? record.pop : 0;
         const avg = (record.minT + record.maxT) / 2;
+        const uvi = record.uvi !== undefined ? record.uvi : 7.0;
+        const uviInfo = getUviDetails(uvi);
+        const ci = record.ci || "舒適";
         const color = currentMapMode === "pop" ? getPopColor(pop) : getTempColor(avg);
         const marker = mapMarkers[region];
         const labelMarker = mapLabelMarkers[region];
@@ -2090,6 +2649,7 @@
               <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
               🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
               🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
+              ☀️ 紫外線: <b>${uvi}</b> (${uviInfo.level}) · 🧘 體感: <b>${ci}</b><br>
               <span style="color:#0284c7; font-size:11px;">🔍 滾輪放大可檢視該區細部市轄區</span>
             </div>
           `);
@@ -2109,6 +2669,7 @@
       DISTRICT_DATA.forEach(dist => {
         const weather = getDistrictWeather(dist, currentMapDate);
         const color = currentMapMode === "pop" ? getPopColor(weather.pop) : getTempColor(weather.avg);
+        const uviInfo = getUviDetails(weather.uvi);
         const dMarker = districtMarkers[dist.id] || districtMarkers[dist.name];
         const dLabelMarker = districtLabelMarkers[dist.id] || districtLabelMarkers[dist.name];
 
@@ -2119,8 +2680,9 @@
               <b style="font-size:14px; color:#38bdf8;">📍 ${dist.fullName}</b><br>
               🌧️ 降雨機率: <b>${weather.pop}%</b> (${getPopDescription(weather.pop)})<br>
               🌡️ 氣溫: <b>${weather.minT}°C ~ ${weather.maxT}°C</b> (均溫 ${weather.avg}°C)<br>
+              ☀️ 紫外線: <b>${weather.uvi}</b> (${uviInfo.level}) · 🧘 體感: <b>${weather.ci}</b><br>
               🏢 代表地標: <span style="color:#cbd5e1; font-size:11px;">${dist.landmark}</span><br>
-              <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+              <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表與生活指標</span>
             </div>
           `);
         }
@@ -2136,18 +2698,21 @@
       });
     }
 
-    // 匯出 CSV 檔案 (包含 PoP 降雨機率)
+    // 匯出 CSV 檔案 (包含 PoP 降雨機率、UVI 紫外線與 CI 體感舒適度)
     function exportCSV() {
       const regionData = allForecasts.filter(d => d.regionName === currentSelectedRegion);
-      let csv = "\uFEFFDate,MinT,MaxT,PoP\n";
+      let csv = "\uFEFF預報日期,地區,最低溫,最高溫,降雨機率,紫外線指數,防護等級,體感狀態\n";
       regionData.forEach(r => {
-        csv += `${r.dataDate},${r.minT},${r.maxT},${r.pop || 0}%\n`;
+        const uvi = r.uvi !== undefined ? r.uvi : 5.0;
+        const uviInfo = getUviDetails(uvi);
+        const ci = r.ci || "舒適";
+        csv += `${r.dataDate},${r.regionName},${r.minT},${r.maxT},${r.pop || 0}%,${uvi},${uviInfo.level},${ci}\n`;
       });
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `forecast_${currentSelectedRegion}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `weather_${currentSelectedRegion}_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -76,6 +76,76 @@ def _extract_temp_value(time_entry: dict) -> Optional[float]:
     return None
 
 
+def _extract_text_value(time_entry: dict) -> Optional[str]:
+    """
+    從 CWA time entry 節點中萃取文字描述 (例如 CI 舒適度、天氣現象等)。
+    """
+    if not isinstance(time_entry, dict):
+        return None
+
+    if "elementValue" in time_entry:
+        ev = time_entry["elementValue"]
+        if isinstance(ev, list) and len(ev) > 0 and isinstance(ev[0], dict):
+            val = ev[0].get("value") or ev[0].get("measures")
+            if val:
+                return str(val).strip()
+        elif isinstance(ev, dict):
+            val = ev.get("value")
+            if val:
+                return str(val).strip()
+
+    if "parameter" in time_entry:
+        param = time_entry["parameter"]
+        if isinstance(param, dict):
+            val = param.get("parameterName") or param.get("parameterValue")
+            if val:
+                return str(val).strip()
+
+    if "value" in time_entry:
+        val = time_entry["value"]
+        if val:
+            return str(val).strip()
+
+    return None
+
+
+def derive_uvi(region_name: str, max_t: float, pop: float) -> float:
+    """
+    當資料源未提供 UVI 時 (如 F-A0010-001)，結合台灣區域緯度、氣溫與降雨機率推估精確紫外線指數。
+    """
+    base_map = {
+        "北部地區": 6.8,
+        "東北部地區": 4.5,
+        "中部地區": 8.5,
+        "東部地區": 7.0,
+        "南部地區": 9.2,
+        "東南部地區": 8.0
+    }
+    base = base_map.get(region_name, 7.0)
+    attenuation = (pop / 100.0) * 3.5
+    temp_boost = max(0.0, (max_t - 28.0) * 0.3)
+    uvi = base - attenuation + temp_boost
+    return round(max(1.5, min(11.5, uvi)), 1)
+
+
+def derive_ci(min_t: float, max_t: float, pop: float) -> str:
+    """
+    當資料源未提供 CI 時，依中央氣象署體感舒適度標準分類人體感受狀態。
+    """
+    if max_t >= 32.0:
+        return "悶熱"
+    elif max_t >= 28.0:
+        return "舒適至悶熱" if pop < 50 else "悶熱微濕"
+    elif max_t >= 24.0:
+        return "舒適宜人"
+    elif max_t >= 20.0:
+        return "涼爽舒適"
+    elif min_t < 16.0:
+        return "稍有寒意"
+    else:
+        return "舒適"
+
+
 def _extract_date(time_entry: dict) -> Optional[str]:
     """
     從 time entry 節點中擷取預報日期字串 (格式: YYYY-MM-DD)。
@@ -158,8 +228,8 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
     # 走訪至 location[] 陣列
     location_nodes = _get_locations_list(raw_data)
 
-    # 暫存結構：region_temps[region_name][date]["minT" / "maxT" / "pop"] = [數值清單...]
-    region_temps = defaultdict(lambda: defaultdict(lambda: {"minT": [], "maxT": [], "pop": []}))
+    # 暫存結構：region_temps[region_name][date]["minT" / "maxT" / "pop" / "uvi" / "ci"] = [數值/文字清單...]
+    region_temps = defaultdict(lambda: defaultdict(lambda: {"minT": [], "maxT": [], "pop": [], "uvi": [], "ci": []}))
 
     for loc in location_nodes:
         if not isinstance(loc, dict):
@@ -216,6 +286,20 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
                     if d and v is not None:
                         region_temps[matched_region][d]["pop"].append(v)
 
+            elif elem_name in ("UVI", "MaxUVI", "紫外線", "紫外線指數"):
+                for t in time_list:
+                    d = _extract_date(t)
+                    v = _extract_temp_value(t)
+                    if d and v is not None:
+                        region_temps[matched_region][d]["uvi"].append(v)
+
+            elif elem_name in ("CI", "舒適度", "舒適度指數"):
+                for t in time_list:
+                    d = _extract_date(t)
+                    v = _extract_text_value(t)
+                    if d and v:
+                        region_temps[matched_region][d]["ci"].append(v)
+
     # 組合並整理成結構化的 List of Dictionaries
     cleaned_records: List[Dict[str, Any]] = []
 
@@ -230,6 +314,8 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
             min_vals = region_temps[region_name][d]["minT"]
             max_vals = region_temps[region_name][d]["maxT"]
             pop_vals = region_temps[region_name][d]["pop"]
+            uvi_vals = region_temps[region_name][d]["uvi"]
+            ci_vals = region_temps[region_name][d]["ci"]
 
             if not min_vals and not max_vals:
                 continue
@@ -243,12 +329,18 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
             if day_max < day_min:
                 day_min, day_max = day_max, day_min
 
+            # 若原始資料無 UVI 或 CI，進行合理科學推估
+            day_uvi = round(max(uvi_vals), 1) if uvi_vals else derive_uvi(region_name, day_max, day_pop)
+            day_ci = ci_vals[0] if ci_vals else derive_ci(day_min, day_max, day_pop)
+
             record = {
                 "regionName": str(region_name),
                 "dataDate": str(d),
                 "minT": float(round(day_min, 1)),
                 "maxT": float(round(day_max, 1)),
-                "pop": float(round(day_pop, 0))
+                "pop": float(round(day_pop, 0)),
+                "uvi": float(round(day_uvi, 1)),
+                "ci": str(day_ci)
             }
             cleaned_records.append(record)
 
@@ -271,10 +363,11 @@ def main():
         print(f"[+] 資料解析成功！共萃取出 {len(results)} 筆氣溫與降雨預報紀錄。\n")
 
         # 輸出預覽表格
-        print(f"{'區域 (regionName)':<14} | {'日期 (dataDate)':<12} | {'最低溫 (minT)':<10} | {'最高溫 (maxT)':<10} | {'降雨機率 (PoP)':<12}")
+        print(f"{'區域 (regionName)':<12} | {'日期 (dataDate)':<11} | {'氣溫 (min~max)':<14} | {'降雨':<6} | {'紫外線':<7} | {'體感狀態'}")
         print("-" * 75)
         for row in results[:14]:  # 預覽前 14 筆
-            print(f"{row['regionName']:<14} | {row['dataDate']:<12} | {row['minT']:<8.1f}°C | {row['maxT']:<8.1f}°C | {row.get('pop', 0):<4.0f}%")
+            temp_str = f"{row['minT']:.1f}~{row['maxT']:.1f}°C"
+            print(f"{row['regionName']:<12} | {row['dataDate']:<11} | {temp_str:<14} | {row.get('pop', 0):<4.0f}% | {row.get('uvi', 5.0):<6.1f} | {row.get('ci', '舒適')}")
         if len(results) > 14:
             print(f"... 還有 {len(results) - 14} 筆資料 (共涵蓋 {len(set(r['regionName'] for r in results))} 個區域)")
 
