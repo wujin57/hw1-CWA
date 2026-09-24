@@ -239,6 +239,110 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "35",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "35",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "40",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "40",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "50",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "50",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "55",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "55",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "40",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "40",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "45",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "45",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "50",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "50",
+                    "parameterUnit": "百分比"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -449,6 +553,110 @@
                   "parameter": {
                     "parameterName": "31.1",
                     "parameterUnit": "C"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "10",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "10",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "15",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "15",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "25",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "25",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "30",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "30",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "15",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "15",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "20",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "20",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "25",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "25",
+                    "parameterUnit": "百分比"
                   }
                 }
               ]
@@ -665,6 +873,110 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "15",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "15",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "20",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "20",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "30",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "30",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "35",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "35",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "20",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "20",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "25",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "25",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "30",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "30",
+                    "parameterUnit": "百分比"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -875,6 +1187,110 @@
                   "parameter": {
                     "parameterName": "27.1",
                     "parameterUnit": "C"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "65",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "65",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "70",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "70",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "80",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "80",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "85",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "85",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "70",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "70",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "75",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "75",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "80",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "80",
+                    "parameterUnit": "百分比"
                   }
                 }
               ]
@@ -1091,6 +1507,110 @@
                   }
                 }
               ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "40",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "40",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "45",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "45",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "55",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "55",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "60",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "60",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "45",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "45",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "50",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "50",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "55",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "55",
+                    "parameterUnit": "百分比"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -1301,6 +1821,110 @@
                   "parameter": {
                     "parameterName": "30.6",
                     "parameterUnit": "C"
+                  }
+                }
+              ]
+            },
+            {
+              "elementName": "PoP",
+              "description": "降雨機率",
+              "time": [
+                {
+                  "startTime": "2026-09-24 00:00:00",
+                  "endTime": "2026-09-24 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "25",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "25",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-25 00:00:00",
+                  "endTime": "2026-09-25 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "30",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "30",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-26 00:00:00",
+                  "endTime": "2026-09-26 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "40",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "40",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-27 00:00:00",
+                  "endTime": "2026-09-27 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "45",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "45",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-28 00:00:00",
+                  "endTime": "2026-09-28 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "30",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "30",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-29 00:00:00",
+                  "endTime": "2026-09-29 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "35",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "35",
+                    "parameterUnit": "百分比"
+                  }
+                },
+                {
+                  "startTime": "2026-09-30 00:00:00",
+                  "endTime": "2026-09-30 23:59:59",
+                  "elementValue": [
+                    {
+                      "value": "40",
+                      "measures": "百分比"
+                    }
+                  ],
+                  "parameter": {
+                    "parameterName": "40",
+                    "parameterUnit": "百分比"
                   }
                 }
               ]

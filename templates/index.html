@@ -432,6 +432,31 @@
       font-weight: 700;
     }
 
+    .pop-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .badge-pop-low {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-pop-med {
+      background: rgba(14, 165, 233, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    .badge-pop-high {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
     /* SQL Live Banner */
     .sql-box {
       margin-top: 18px;
@@ -587,11 +612,11 @@
 
       <div class="kpi-card">
         <div class="kpi-text">
-          <div class="kpi-label">最大日溫差</div>
-          <div class="kpi-val" style="color: #f59e0b;" id="kpi-spread">--°</div>
-          <div class="kpi-sub" id="kpi-spread-reg">日夜溫差</div>
+          <div class="kpi-label">今日最高降雨機率</div>
+          <div class="kpi-val" style="color: #38bdf8;" id="kpi-pop">--%</div>
+          <div class="kpi-sub" id="kpi-pop-reg">全區降雨警戒</div>
         </div>
-        <div class="kpi-icon">⚡</div>
+        <div class="kpi-icon">🌧️</div>
       </div>
 
       <div class="kpi-card">
@@ -653,7 +678,7 @@
         <!-- 一週資料表格 -->
         <div class="table-panel">
           <div class="panel-head">
-            <span>一週資料表格 (Date / MinT / MaxT)</span>
+            <span>一週資料表格 (Date / MinT / MaxT / PoP 降雨機率)</span>
           </div>
           <div style="flex: 1; overflow-y: auto;">
             <table class="data-table">
@@ -662,6 +687,7 @@
                   <th>Date</th>
                   <th>MinT</th>
                   <th>MaxT</th>
+                  <th>降雨機率 (PoP)</th>
                 </tr>
               </thead>
               <tbody id="table-body">
@@ -675,7 +701,7 @@
       <!-- 顯示執行的 SQL 查詢語法 -->
       <div class="sql-box">
         <span>⚡ <b>後端執行 SQL 查詢：</b></span>
-        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
+        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT, pop FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
       </div>
     </section>
 
@@ -686,15 +712,51 @@
       <div class="section-header">
         <div class="section-title">
           <span class="title-icon">🗺️</span>
-          <span class="title-text">全台各區氣溫分佈互動地圖 (Taiwan Temperature Map)</span>
+          <span class="title-text">全台各區氣候分佈互動地圖 (Taiwan Weather Map)</span>
         </div>
         <span class="data-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">
           即時聯動分析
         </span>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px;">
-        💡 互動功能：地圖標記依各區域當日平均溫度自動著色。<b>點擊地圖上的各區圓點，可同步切換上方區域下拉選單、折線圖與預報數據表格！</b>
+        💡 互動功能：地圖支援<b>各區域降雨機率</b>與<b>平均氣溫</b>圖層切換。點擊地圖圓點或使用下拉選單，可同步切換上方圖表與預報表格！
       </p>
+
+      <!-- 地圖專屬控制列：包含核心需求 下拉式選單顯示各區域降雨機率 -->
+      <div class="control-bar" style="margin-bottom: 20px; flex-wrap: wrap; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25);">
+        <div class="control-left" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          <!-- 核心需求：下拉式選單顯示各區域降雨機率 -->
+          <div>
+            <label for="map-pop-select" class="control-label">
+              <span>🌧️ 各區域降雨機率選單 (PoP Select)：</span>
+            </label>
+            <select id="map-pop-select" class="select-custom" onchange="onMapPopSelect()" style="min-width: 290px; border-color: #38bdf8; background: #0f172a; color: #7dd3fc; font-weight: 600;">
+              <!-- 由 JavaScript 動態填入各區域降雨機率 -->
+            </select>
+          </div>
+
+          <!-- 地圖圖層模式切換 -->
+          <div>
+            <label for="map-mode-select" class="control-label">
+              <span>🎨 地圖圖層指標：</span>
+            </label>
+            <select id="map-mode-select" class="select-custom" onchange="onMapModeChange()">
+              <option value="pop" selected>🌧️ 降雨機率分佈 (PoP %)</option>
+              <option value="temp">🌡️ 平均氣溫分佈 (°C)</option>
+            </select>
+          </div>
+
+          <!-- 預報日期選擇 -->
+          <div>
+            <label for="map-date-select" class="control-label">
+              <span>📅 地圖預報日期：</span>
+            </label>
+            <select id="map-date-select" class="select-custom" onchange="onMapDateChange()">
+              <!-- 由 JavaScript 動態填入 7 天日期 -->
+            </select>
+          </div>
+        </div>
+      </div>
 
       <div class="grid-step5">
         <!-- 台灣 Leaflet 地圖 -->
@@ -702,37 +764,22 @@
 
         <!-- 圖例與即時狀態面板 -->
         <div class="map-side">
-          <div>
-            <div class="legend-title">🎨 依平均溫度設定顏色：</div>
-            <div class="legend-row">
-              <div class="color-box" style="background: #3b82f6;"></div>
-              <span>&lt; 20°C (藍色)</span>
-            </div>
-            <div class="legend-row">
-              <div class="color-box" style="background: #22c55e;"></div>
-              <span>20 - 25°C (綠色)</span>
-            </div>
-            <div class="legend-row">
-              <div class="color-box" style="background: #eab308;"></div>
-              <span>25 - 30°C (黃色)</span>
-            </div>
-            <div class="legend-row">
-              <div class="color-box" style="background: #ef4444;"></div>
-              <span>&gt; 30°C (紅色)</span>
-            </div>
+          <div id="legend-container">
+            <!-- 由 JavaScript 動態繪製圖例 -->
           </div>
 
           <!-- 區域詳情卡片 -->
           <div class="region-detail-card">
             <div class="detail-head">
               <span id="detail-reg-name">中部地區</span>
-              <span id="detail-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #eab308; color: #000; font-weight: 700;">均溫 26.5°C</span>
+              <span id="detail-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #0ea5e9; color: #fff; font-weight: 700;">降雨機率 10%</span>
             </div>
             <div class="detail-body">
-              <b>預報首日：</b><span id="detail-date">--</span><br>
-              <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">22.5°C</span><br>
-              <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">30.5°C</span><br>
-              <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">8.0°C</span>
+              <b>預報日期：</b><span id="detail-date">--</span><br>
+              <b>降雨機率 (PoP)：</b><span id="detail-pop" style="color: #38bdf8; font-weight: 800;">--%</span> <span id="detail-pop-desc" style="font-size: 0.8rem; color: #94a3b8;"></span><br>
+              <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">--°C</span><br>
+              <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">--°C</span><br>
+              <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">--°C</span>
             </div>
           </div>
         </div>
@@ -758,16 +805,88 @@
 
     let allForecasts = [];
     let currentSelectedRegion = "中部地區";
+    let currentMapMode = "pop"; // 'pop' (降雨機率) 或 'temp' (平均氣溫)
+    let currentMapDate = null;
     let chartInstance = null;
     let mapInstance = null;
     let mapMarkers = {};
+    let mapLabelMarkers = {};
 
-    // 依平均溫度決定顏色 (完全吻合投影片規範)
+    // 依平均溫度決定顏色 (<20 藍, 20-25 綠, 25-30 黃, >30 紅)
     function getTempColor(avgTemp) {
-      if (avgTemp < 20) return "#3b82f6";       // <20°C 藍色
-      if (avgTemp <= 25) return "#22c55e";      // 20-25°C 綠色
-      if (avgTemp <= 30) return "#eab308";      // 25-30°C 黃色
-      return "#ef4444";                         // >30°C 紅色
+      if (avgTemp < 20) return "#3b82f6";
+      if (avgTemp <= 25) return "#22c55e";
+      if (avgTemp <= 30) return "#eab308";
+      return "#ef4444";
+    }
+
+    // 依降雨機率決定顏色 (<20% 綠, 20-40% 水藍, 40-70% 黃橙, >=70% 紅)
+    function getPopColor(pop) {
+      if (pop < 20) return "#22c55e";
+      if (pop < 40) return "#0ea5e9";
+      if (pop < 70) return "#f59e0b";
+      return "#ef4444";
+    }
+
+    function getPopDescription(pop) {
+      if (pop < 20) return "晴朗少雨，天氣穩定";
+      if (pop < 40) return "多雲偶有局部陣雨";
+      if (pop < 70) return "短暫陣雨，出門備傘";
+      return "高機率降雨，慎防短暫雨";
+    }
+
+    function getPopIcon(pop) {
+      if (pop < 20) return "☀️";
+      if (pop < 40) return "⛅";
+      if (pop < 70) return "🌧️";
+      return "⛈️";
+    }
+
+    // 動態繪製地圖圖例
+    function renderLegend() {
+      const container = document.getElementById("legend-container");
+      if (!container) return;
+      if (currentMapMode === "pop") {
+        container.innerHTML = `
+          <div class="legend-title">🌧️ 降雨機率 (PoP) 色階圖例：</div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #22c55e;"></div>
+            <span>&lt; 20% (綠色：晴朗乾爽)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #0ea5e9;"></div>
+            <span>20 - 40% (水藍：局部陣雨)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #f59e0b;"></div>
+            <span>40 - 70% (黃橙：短暫雨/陣雨)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #ef4444;"></div>
+            <span>≥ 70% (紅色：高降雨警戒)</span>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="legend-title">🌡️ 依平均溫度設定顏色：</div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #3b82f6;"></div>
+            <span>&lt; 20°C (藍色)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #22c55e;"></div>
+            <span>20 - 25°C (綠色)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #eab308;"></div>
+            <span>25 - 30°C (黃色)</span>
+          </div>
+          <div class="legend-row">
+            <div class="color-box" style="background: #ef4444;"></div>
+            <span>&gt; 30°C (紅色)</span>
+          </div>
+        `;
+      }
     }
 
     // 初始化載入
@@ -778,12 +897,115 @@
         if (json.status === 'success') {
           allForecasts = json.data;
           updateDateBadges(json.today);
+          populateMapControls();
+          renderLegend();
           renderKPIs();
           renderRegionView(currentSelectedRegion);
           initTaiwanMap();
         }
       } catch (err) {
         console.error("載入預報資料失敗:", err);
+      }
+    }
+
+    // 填入地圖日期與降雨機率選單
+    function populateMapControls() {
+      if (!allForecasts.length) return;
+      const dates = [...new Set(allForecasts.map(d => d.dataDate))].sort();
+      if (!currentMapDate || !dates.includes(currentMapDate)) {
+        currentMapDate = dates[0];
+      }
+
+      // 1. 填入日期下拉選單
+      const dateSelect = document.getElementById("map-date-select");
+      if (dateSelect) {
+        dateSelect.innerHTML = "";
+        dates.forEach((d, idx) => {
+          const opt = document.createElement("option");
+          opt.value = d;
+          opt.textContent = idx === 0 ? `${d} (今日首日)` : `${d} (+${idx}天)`;
+          if (d === currentMapDate) opt.selected = true;
+          dateSelect.appendChild(opt);
+        });
+      }
+
+      // 2. 填入各區域降雨機率下拉選單
+      updateMapPopDropdown();
+    }
+
+    // 更新各區域降雨機率下拉選單選項
+    function updateMapPopDropdown() {
+      const popSelect = document.getElementById("map-pop-select");
+      if (!popSelect || !allForecasts.length) return;
+
+      const dateRecords = allForecasts.filter(d => d.dataDate === currentMapDate);
+      popSelect.innerHTML = "";
+
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "ALL";
+      defaultOpt.textContent = `📍 【全台 6 區降雨概況】(點選切換地區)`;
+      popSelect.appendChild(defaultOpt);
+
+      // 依降雨機率由高至低排序便於查看
+      const sortedByPop = [...dateRecords].sort((a, b) => (b.pop || 0) - (a.pop || 0));
+
+      sortedByPop.forEach(r => {
+        const pop = r.pop !== undefined ? r.pop : 0;
+        const icon = getPopIcon(pop);
+        const opt = document.createElement("option");
+        opt.value = r.regionName;
+        opt.textContent = `${icon} ${r.regionName} — 降雨機率 ${pop}% (${getPopDescription(pop).slice(0, 4)})`;
+        if (r.regionName === currentSelectedRegion) {
+          opt.selected = true;
+        }
+        popSelect.appendChild(opt);
+      });
+    }
+
+    // 核心互動：降雨機率下拉選單變更時觸發
+    function onMapPopSelect() {
+      const select = document.getElementById("map-pop-select");
+      const region = select.value;
+      if (region && region !== "ALL") {
+        currentSelectedRegion = region;
+        document.getElementById("region-select").value = region;
+        renderRegionView(region);
+        focusMapRegion(region);
+      } else {
+        if (mapInstance) {
+          mapInstance.setView([23.7, 120.95], 7);
+        }
+      }
+    }
+
+    // 地圖圖層模式變更 (降雨機率 vs 氣溫)
+    function onMapModeChange() {
+      const select = document.getElementById("map-mode-select");
+      currentMapMode = select.value;
+      renderLegend();
+      updateTaiwanMapMarkers();
+      const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
+      updateDetailCard(currentSelectedRegion, currentDayData);
+    }
+
+    // 地圖日期變更
+    function onMapDateChange() {
+      const select = document.getElementById("map-date-select");
+      currentMapDate = select.value;
+      updateMapPopDropdown();
+      updateTaiwanMapMarkers();
+      const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
+      updateDetailCard(currentSelectedRegion, currentDayData);
+    }
+
+    // 聚焦點位並開彈窗
+    function focusMapRegion(region) {
+      if (!mapInstance || !REGION_COORDS[region]) return;
+      const coords = REGION_COORDS[region];
+      mapInstance.setView([coords.lat, coords.lng], 8, { animate: true });
+      const marker = mapMarkers[region];
+      if (marker) {
+        marker.openPopup();
       }
     }
 
@@ -819,6 +1041,7 @@
           if (fJson.status === 'success') {
             allForecasts = fJson.data;
             updateDateBadges(fJson.today);
+            populateMapControls();
             renderKPIs();
             renderRegionView(currentSelectedRegion);
             updateTaiwanMapMarkers();
@@ -844,23 +1067,18 @@
     function renderKPIs() {
       if (!allForecasts.length) return;
 
-      // 優先鎖定首日 (今日) 之各區氣溫進行指標比較
       const firstDate = allForecasts[0]?.dataDate;
       const todayRecords = allForecasts.filter(d => d.dataDate === firstDate);
       const recordsToUse = todayRecords.length ? todayRecords : allForecasts;
 
       let maxItem = recordsToUse[0];
       let minItem = recordsToUse[0];
-      let maxSpreadItem = allForecasts[0];
+      let maxPopItem = recordsToUse[0];
 
       recordsToUse.forEach(d => {
         if (d.maxT > maxItem.maxT) maxItem = d;
         if (d.minT < minItem.minT) minItem = d;
-      });
-
-      allForecasts.forEach(d => {
-        const spread = d.maxT - d.minT;
-        if (spread > (maxSpreadItem.maxT - maxSpreadItem.minT)) maxSpreadItem = d;
+        if ((d.pop || 0) > (maxPopItem.pop || 0)) maxPopItem = d;
       });
 
       document.getElementById("kpi-maxt").textContent = `${maxItem.maxT}°C`;
@@ -869,9 +1087,9 @@
       document.getElementById("kpi-mint").textContent = `${minItem.minT}°C`;
       document.getElementById("kpi-mint-reg").textContent = `${minItem.regionName} (${minItem.dataDate.slice(5)})`;
 
-      const maxSpreadVal = (maxSpreadItem.maxT - maxSpreadItem.minT).toFixed(1);
-      document.getElementById("kpi-spread").textContent = `${maxSpreadVal}°`;
-      document.getElementById("kpi-spread-reg").textContent = `${maxSpreadItem.regionName} (${maxSpreadItem.dataDate.slice(5)})`;
+      const maxPopVal = maxPopItem.pop !== undefined ? maxPopItem.pop : 0;
+      document.getElementById("kpi-pop").textContent = `${maxPopVal}%`;
+      document.getElementById("kpi-pop-reg").textContent = `${maxPopItem.regionName} (${getPopDescription(maxPopVal).slice(0, 4)})`;
     }
 
     // 下拉選單變更時觸發
@@ -879,6 +1097,10 @@
       const select = document.getElementById("region-select");
       currentSelectedRegion = select.value;
       renderRegionView(currentSelectedRegion);
+      // 同步更新地圖選單與視角
+      const popSelect = document.getElementById("map-pop-select");
+      if (popSelect) popSelect.value = currentSelectedRegion;
+      focusMapRegion(currentSelectedRegion);
     }
 
     // 渲染步驟 4：折線圖、一週資料表格與 SQL 語法
@@ -888,20 +1110,20 @@
 
       // 1. 更新 SQL 顯示
       document.getElementById("sql-text").textContent = 
-        `SELECT id, regionName, dataDate, minT, maxT FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
+        `SELECT id, regionName, dataDate, minT, maxT, pop FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
 
       // 2. 更新折線圖標題
       document.getElementById("chart-title").textContent = `Temperature Forecast - ${regionName}`;
 
-      // 3. 繪製最高/最低溫折線圖 (MaxT 紅線, MinT 藍線, 附圓點標記)
-      const dates = regionData.map(d => d.dataDate.slice(5)); // MM-DD 格式
+      // 3. 繪製最高/最低溫折線圖
+      const dates = regionData.map(d => d.dataDate.slice(5));
       const maxTemps = regionData.map(d => d.maxT);
       const minTemps = regionData.map(d => d.minT);
 
       const chartOptions = {
         series: [
-          { name: "MaxT", data: maxTemps, color: "#ef4444" },
-          { name: "MinT", data: minTemps, color: "#3b82f6" }
+          { name: "MaxT (最高溫)", data: maxTemps, color: "#ef4444" },
+          { name: "MinT (最低溫)", data: minTemps, color: "#3b82f6" }
         ],
         chart: {
           type: "line",
@@ -940,40 +1162,54 @@
       chartInstance = new ApexCharts(document.getElementById("apex-chart-container"), chartOptions);
       chartInstance.render();
 
-      // 4. 渲染右側表格 (Date, MinT, MaxT)
+      // 4. 渲染右側表格 (Date, MinT, MaxT, PoP)
       const tbody = document.getElementById("table-body");
       tbody.innerHTML = "";
       regionData.forEach(row => {
+        const pop = row.pop !== undefined ? row.pop : 0;
+        const popClass = pop >= 70 ? 'badge-pop-high' : (pop >= 40 ? 'badge-pop-med' : 'badge-pop-low');
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.dataDate}</td>
-          <td class="text-mint">${row.minT}</td>
-          <td class="text-maxt">${row.maxT}</td>
+          <td class="text-mint">${row.minT}°C</td>
+          <td class="text-maxt">${row.maxT}°C</td>
+          <td><span class="pop-badge ${popClass}">🌧️ ${pop}%</span></td>
         `;
         tbody.appendChild(tr);
       });
 
       // 5. 更新步驟 5 右側詳情卡片
-      updateDetailCard(regionName, regionData[0]);
+      const dayData = regionData.find(d => d.dataDate === currentMapDate) || regionData[0];
+      updateDetailCard(regionName, dayData);
     }
 
     // 更新步驟 5 區域詳情卡片
-    function updateDetailCard(regionName, firstDayData) {
-      if (!firstDayData) return;
-      const avg = ((firstDayData.minT + firstDayData.maxT) / 2).toFixed(1);
-      const spread = (firstDayData.maxT - firstDayData.minT).toFixed(1);
-      const color = getTempColor(avg);
+    function updateDetailCard(regionName, dayData) {
+      if (!dayData) return;
+      const pop = dayData.pop !== undefined ? dayData.pop : 0;
+      const avg = ((dayData.minT + dayData.maxT) / 2).toFixed(1);
+      const spread = (dayData.maxT - dayData.minT).toFixed(1);
+      const popColor = getPopColor(pop);
+      const tempColor = getTempColor(parseFloat(avg));
 
       document.getElementById("detail-reg-name").textContent = regionName;
-      document.getElementById("detail-date").textContent = firstDayData.dataDate;
-      document.getElementById("detail-mint").textContent = `${firstDayData.minT}°C`;
-      document.getElementById("detail-maxt").textContent = `${firstDayData.maxT}°C`;
+      document.getElementById("detail-date").textContent = dayData.dataDate;
+      document.getElementById("detail-pop").textContent = `${pop}%`;
+      document.getElementById("detail-pop-desc").textContent = `(${getPopDescription(pop)})`;
+      document.getElementById("detail-mint").textContent = `${dayData.minT}°C`;
+      document.getElementById("detail-maxt").textContent = `${dayData.maxT}°C`;
       document.getElementById("detail-spread").textContent = `${spread}°C`;
 
       const badge = document.getElementById("detail-badge");
-      badge.textContent = `當日均溫 ${avg}°C`;
-      badge.style.background = color;
-      badge.style.color = (color === "#eab308") ? "#000" : "#fff";
+      if (currentMapMode === "pop") {
+        badge.textContent = `降雨機率 ${pop}%`;
+        badge.style.background = popColor;
+        badge.style.color = "#fff";
+      } else {
+        badge.textContent = `當日均溫 ${avg}°C`;
+        badge.style.background = tempColor;
+        badge.style.color = (tempColor === "#eab308") ? "#000" : "#fff";
+      }
     }
 
     // 初始化步驟 5：台灣 Leaflet 互動地圖
@@ -987,57 +1223,64 @@
         scrollWheelZoom: false
       });
 
-      // 使用免金鑰無浮水印地圖圖磚 (OpenStreetMap)
+      // 免金鑰無浮水印 OpenStreetMap 圖磚
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 18
       }).addTo(mapInstance);
 
-      // 為六大區域建立彩色標記
+      // 為六大區域建立彩色標記與標籤
       Object.keys(REGION_COORDS).forEach(region => {
-        const regionRecords = allForecasts.filter(d => d.regionName === region);
-        if (!regionRecords.length) return;
-
-        const firstDay = regionRecords[0];
-        const avg = (firstDay.minT + firstDay.maxT) / 2;
-        const color = getTempColor(avg);
         const coords = REGION_COORDS[region];
+        const record = allForecasts.find(d => d.regionName === region && d.dataDate === currentMapDate)
+          || allForecasts.find(d => d.regionName === region);
+        if (!record) return;
+
+        const pop = record.pop !== undefined ? record.pop : 0;
+        const avg = (record.minT + record.maxT) / 2;
+        const color = currentMapMode === "pop" ? getPopColor(pop) : getTempColor(avg);
 
         // 圓點標記
         const marker = L.circleMarker([coords.lat, coords.lng], {
-          radius: 13,
+          radius: 14,
           fillColor: color,
           color: "#ffffff",
           weight: 2,
           opacity: 1,
-          fillOpacity: 0.88
+          fillOpacity: 0.9
         }).addTo(mapInstance);
 
         marker.bindPopup(`
           <div style="font-size:13px; text-align:center; padding: 4px;">
-            <b>${region}</b><br>
-            當日平均溫: <b>${avg.toFixed(1)}°C</b><br>
+            <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
+            🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
+            🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
             <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
           </div>
         `);
 
-        // 點擊地圖圓點時，同步切換上方步驟 4 的下拉選單與折線圖！
+        // 點擊地圖圓點時，同步切換上方下拉選單、折線圖與表格！
         marker.on("click", () => {
           document.getElementById("region-select").value = region;
+          const popSelect = document.getElementById("map-pop-select");
+          if (popSelect) popSelect.value = region;
           currentSelectedRegion = region;
           renderRegionView(region);
+          focusMapRegion(region);
         });
 
-        // 區域文字標籤
-        L.marker([coords.lat, coords.lng], {
+        // 浮動文字標籤
+        const labelBadge = currentMapMode === "pop" ? `${coords.short} 🌧️${pop}%` : `${coords.short} ${avg.toFixed(1)}°C`;
+        const labelMarker = L.marker([coords.lat, coords.lng], {
           icon: L.divIcon({
             className: 'map-label',
-            html: `<div style="transform: translate(12px, -8px); font-weight:bold; font-size:12px; color:#f8fafc; text-shadow:0 0 6px #000;">${coords.short}</div>`,
-            iconSize: [60, 20]
+            html: `<div style="transform: translate(14px, -10px); font-weight:bold; font-size:11px; color:#ffffff; background: rgba(15,23,42,0.85); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.5);">${labelBadge}</div>`,
+            iconSize: [80, 20]
           })
         }).addTo(mapInstance);
 
         mapMarkers[region] = marker;
+        mapLabelMarkers[region] = labelMarker;
       });
     }
 
@@ -1048,33 +1291,46 @@
         return;
       }
       Object.keys(REGION_COORDS).forEach(region => {
-        const regionRecords = allForecasts.filter(d => d.regionName === region);
-        if (!regionRecords.length) return;
+        const record = allForecasts.find(d => d.regionName === region && d.dataDate === currentMapDate)
+          || allForecasts.find(d => d.regionName === region);
+        if (!record) return;
 
-        const firstDay = regionRecords[0];
-        const avg = (firstDay.minT + firstDay.maxT) / 2;
-        const color = getTempColor(avg);
+        const pop = record.pop !== undefined ? record.pop : 0;
+        const avg = (record.minT + record.maxT) / 2;
+        const color = currentMapMode === "pop" ? getPopColor(pop) : getTempColor(avg);
         const marker = mapMarkers[region];
+        const labelMarker = mapLabelMarkers[region];
+        const coords = REGION_COORDS[region];
+
         if (marker) {
           marker.setStyle({ fillColor: color });
           marker.setPopupContent(`
             <div style="font-size:13px; text-align:center; padding: 4px;">
-              <b>${region}</b><br>
-              預報日期: <b>${firstDay.dataDate}</b><br>
-              當日平均溫: <b>${avg.toFixed(1)}°C</b><br>
+              <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
+              🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
+              🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
               <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
             </div>
           `);
         }
+
+        if (labelMarker) {
+          const labelBadge = currentMapMode === "pop" ? `${coords.short} 🌧️${pop}%` : `${coords.short} ${avg.toFixed(1)}°C`;
+          labelMarker.setIcon(L.divIcon({
+            className: 'map-label',
+            html: `<div style="transform: translate(14px, -10px); font-weight:bold; font-size:11px; color:#ffffff; background: rgba(15,23,42,0.85); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.5);">${labelBadge}</div>`,
+            iconSize: [80, 20]
+          }));
+        }
       });
     }
 
-    // 匯出 CSV 檔案
+    // 匯出 CSV 檔案 (包含 PoP 降雨機率)
     function exportCSV() {
       const regionData = allForecasts.filter(d => d.regionName === currentSelectedRegion);
-      let csv = "\uFEFFDate,MinT,MaxT\n";
+      let csv = "\uFEFFDate,MinT,MaxT,PoP\n";
       regionData.forEach(r => {
-        csv += `${r.dataDate},${r.minT},${r.maxT}\n`;
+        csv += `${r.dataDate},${r.minT},${r.maxT},${r.pop || 0}%\n`;
       });
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);

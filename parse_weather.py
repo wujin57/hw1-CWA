@@ -158,8 +158,8 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
     # 走訪至 location[] 陣列
     location_nodes = _get_locations_list(raw_data)
 
-    # 暫存結構：region_temps[region_name][date]["minT" / "maxT"] = [數值清單...]
-    region_temps = defaultdict(lambda: defaultdict(lambda: {"minT": [], "maxT": []}))
+    # 暫存結構：region_temps[region_name][date]["minT" / "maxT" / "pop"] = [數值清單...]
+    region_temps = defaultdict(lambda: defaultdict(lambda: {"minT": [], "maxT": [], "pop": []}))
 
     for loc in location_nodes:
         if not isinstance(loc, dict):
@@ -209,6 +209,13 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
                     if d and v is not None:
                         region_temps[matched_region][d]["maxT"].append(v)
 
+            elif elem_name in ("PoP", "PoP12h", "降雨機率", "12小時降雨機率"):
+                for t in time_list:
+                    d = _extract_date(t)
+                    v = _extract_temp_value(t)
+                    if d and v is not None:
+                        region_temps[matched_region][d]["pop"].append(v)
+
     # 組合並整理成結構化的 List of Dictionaries
     cleaned_records: List[Dict[str, Any]] = []
 
@@ -222,6 +229,7 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
         for d in dates:
             min_vals = region_temps[region_name][d]["minT"]
             max_vals = region_temps[region_name][d]["maxT"]
+            pop_vals = region_temps[region_name][d]["pop"]
 
             if not min_vals and not max_vals:
                 continue
@@ -229,6 +237,7 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
             # 計算當日真正的最低與最高溫 (防範早晚分段預報)
             day_min = min(min_vals) if min_vals else (max(max_vals) if max_vals else 0.0)
             day_max = max(max_vals) if max_vals else (min(min_vals) if min_vals else 0.0)
+            day_pop = max(pop_vals) if pop_vals else 20.0
 
             # 防呆校正：若出現 max < min
             if day_max < day_min:
@@ -238,7 +247,8 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
                 "regionName": str(region_name),
                 "dataDate": str(d),
                 "minT": float(round(day_min, 1)),
-                "maxT": float(round(day_max, 1))
+                "maxT": float(round(day_max, 1)),
+                "pop": float(round(day_pop, 0))
             }
             cleaned_records.append(record)
 
@@ -246,7 +256,7 @@ def parse_weather_json(json_path: str = INPUT_FILE) -> List[Dict[str, Any]]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="分析 weather_raw.json 提取六大區域每日最低/最高氣溫")
+    parser = argparse.ArgumentParser(description="分析 weather_raw.json 提取六大區域每日最低/最高氣溫與降雨機率")
     parser.add_argument(
         "--input",
         type=str,
@@ -258,13 +268,13 @@ def main():
     print(f"[*] 正在分析天氣預報資料: {args.input} ...")
     try:
         results = parse_weather_json(args.input)
-        print(f"[+] 資料解析成功！共萃取出 {len(results)} 筆氣溫預報紀錄。\n")
+        print(f"[+] 資料解析成功！共萃取出 {len(results)} 筆氣溫與降雨預報紀錄。\n")
 
         # 輸出預覽表格
-        print(f"{'區域 (regionName)':<14} | {'日期 (dataDate)':<12} | {'最低溫 (minT)':<12} | {'最高溫 (maxT)':<12}")
-        print("-" * 60)
+        print(f"{'區域 (regionName)':<14} | {'日期 (dataDate)':<12} | {'最低溫 (minT)':<10} | {'最高溫 (maxT)':<10} | {'降雨機率 (PoP)':<12}")
+        print("-" * 75)
         for row in results[:14]:  # 預覽前 14 筆
-            print(f"{row['regionName']:<14} | {row['dataDate']:<12} | {row['minT']:<12.1f}°C | {row['maxT']:<12.1f}°C")
+            print(f"{row['regionName']:<14} | {row['dataDate']:<12} | {row['minT']:<8.1f}°C | {row['maxT']:<8.1f}°C | {row.get('pop', 0):<4.0f}%")
         if len(results) > 14:
             print(f"... 還有 {len(results) - 14} 筆資料 (共涵蓋 {len(set(r['regionName'] for r in results))} 個區域)")
 

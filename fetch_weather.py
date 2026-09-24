@@ -127,11 +127,22 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
         "東南部地區": (24.0, 31.5)
     }
 
+    base_pops = {
+        "北部地區": 45,     # 迎風面，降雨機率約 40% ~ 60%
+        "東北部地區": 75,   # 宜蘭山區，水氣充沛，約 65% ~ 85%
+        "中部地區": 20,     # 背風側，多雲晴朗，約 15% ~ 30%
+        "東部地區": 50,     # 花蓮沿海，陣雨機率約 40% ~ 65%
+        "南部地區": 25,     # 晴朗炎熱，午後雷陣雨約 15% ~ 35%
+        "東南部地區": 35    # 台東陣雨，約 25% ~ 45%
+    }
+
     locations_list = []
     for region_name in TARGET_REGIONS:
         min_base, max_base = base_temps[region_name]
+        pop_base = base_pops[region_name]
         min_t_times = []
         max_t_times = []
+        pop_times = []
 
         for offset in range(7):
             day_date = today + timedelta(days=offset)
@@ -141,6 +152,10 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
 
             day_min = round(min_base + (offset * 0.4 % 2.5) - 1.0, 1)
             day_max = round(max_base + (offset * 0.6 % 3.0) - 1.5, 1)
+
+            # 計算當日降雨機率 (每 5% 一個階層，範圍 10% ~ 90%)
+            pop_calc = pop_base + ((offset * 7) % 25) - 10
+            day_pop = int(max(10, min(90, round(pop_calc / 5.0) * 5)))
 
             min_t_times.append({
                 "startTime": start_time,
@@ -156,11 +171,19 @@ def generate_mock_weather_data(output_path: str = OUTPUT_FILE) -> dict:
                 "parameter": {"parameterName": str(day_max), "parameterUnit": "C"}
             })
 
+            pop_times.append({
+                "startTime": start_time,
+                "endTime": end_time,
+                "elementValue": [{"value": str(day_pop), "measures": "百分比"}],
+                "parameter": {"parameterName": str(day_pop), "parameterUnit": "百分比"}
+            })
+
         locations_list.append({
             "locationName": region_name,
             "weatherElement": [
                 {"elementName": "MinT", "description": "最低溫度", "time": min_t_times},
-                {"elementName": "MaxT", "description": "最高溫度", "time": max_t_times}
+                {"elementName": "MaxT", "description": "最高溫度", "time": max_t_times},
+                {"elementName": "PoP", "description": "降雨機率", "time": pop_times}
             ]
         })
 

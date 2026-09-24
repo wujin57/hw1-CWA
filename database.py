@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
     regionName TEXT,
     dataDate TEXT,
     minT REAL,
-    maxT REAL
+    maxT REAL,
+    pop REAL DEFAULT 0
 );
 """
 
@@ -52,6 +53,11 @@ def init_db(db_path: str = DB_FILE) -> None:
             cursor = conn.cursor()
             cursor.execute(CREATE_TABLE_SQL)
             cursor.execute(CREATE_INDEX_SQL)
+            # 確保舊資料表具備 pop 欄位 (向下相容)
+            cursor.execute(f"PRAGMA table_info({TABLE_NAME});")
+            cols = [row["name"] for row in cursor.fetchall()]
+            if "pop" not in cols:
+                cursor.execute(f"ALTER TABLE {TABLE_NAME} ADD COLUMN pop REAL DEFAULT 0;")
             conn.commit()
             print(f"[+] 資料庫初始化成功: {os.path.abspath(db_path)} (資料表: {TABLE_NAME})")
     except sqlite3.Error as e:
@@ -65,11 +71,11 @@ def save_forecasts(
     clear_existing: bool = True
 ) -> int:
     """
-    將清洗後的氣溫資料存入 SQLite 資料庫中。
+    將清洗後的氣溫與降雨資料存入 SQLite 資料庫中。
     使用批次操作 (executemany) 與 INSERT OR REPLACE 兼顧效能與防重入。
 
     Args:
-        forecasts (List[Dict[str, Any]]): 氣溫預報清單，每筆必須包含 regionName, dataDate, minT, maxT
+        forecasts (List[Dict[str, Any]]): 氣象預報清單，每筆包含 regionName, dataDate, minT, maxT, pop
         db_path (str): SQLite 資料庫路徑
         clear_existing (bool): 是否先清空既有紀錄
 
@@ -77,19 +83,25 @@ def save_forecasts(
         int: 成功寫入或更新的總筆數
     """
     if not forecasts:
-        print("[!] 警告: 傳入之氣溫資料清單為空，未執行任何寫入。")
+        print("[!] 警告: 傳入之氣象資料清單為空，未執行任何寫入。")
         return 0
 
     # 確保資料表已建立
     init_db(db_path)
 
     insert_sql = f"""
-    INSERT OR REPLACE INTO {TABLE_NAME} (regionName, dataDate, minT, maxT)
-    VALUES (?, ?, ?, ?);
+    INSERT OR REPLACE INTO {TABLE_NAME} (regionName, dataDate, minT, maxT, pop)
+    VALUES (?, ?, ?, ?, ?);
     """
 
     data_tuples = [
-        (item["regionName"], item["dataDate"], float(item["minT"]), float(item["maxT"]))
+        (
+            item["regionName"],
+            item["dataDate"],
+            float(item["minT"]),
+            float(item["maxT"]),
+            float(item.get("pop", 0.0))
+        )
         for item in forecasts
     ]
 
@@ -104,7 +116,7 @@ def save_forecasts(
             cursor.executemany(insert_sql, data_tuples)
             conn.commit()
             total_saved = len(data_tuples)
-            print(f"[+] 成功寫入/更新 {total_saved} 筆氣溫預報資料至 {db_path}。")
+            print(f"[+] 成功寫入/更新 {total_saved} 筆氣象預報資料至 {db_path}。")
             return total_saved
 
     except sqlite3.Error as e:
@@ -119,7 +131,7 @@ def query_forecasts(
     end_date: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
-    自 SQLite 資料庫查詢氣溫預報紀錄。
+    自 SQLite 資料庫查詢氣溫與降雨預報紀錄。
 
     Args:
         db_path (str): SQLite 資料庫路徑
@@ -128,7 +140,7 @@ def query_forecasts(
         end_date (str, optional): 結束日期 (YYYY-MM-DD)
 
     Returns:
-        List[Dict[str, Any]]: 查詢到的氣溫預報紀錄字典清單
+        List[Dict[str, Any]]: 查詢到的氣象預報紀錄字典清單
     """
     if not os.path.exists(db_path):
         return []
@@ -148,7 +160,7 @@ def query_forecasts(
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     sql = f"""
-    SELECT id, regionName, dataDate, minT, maxT
+    SELECT id, regionName, dataDate, minT, maxT, COALESCE(pop, 0) AS pop
     FROM {TABLE_NAME}
     {where_clause}
     ORDER BY regionName ASC, dataDate ASC;
@@ -166,7 +178,7 @@ def query_forecasts(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="將清洗後氣溫資料存入 SQLite (data.db)")
+    parser = argparse.ArgumentParser(description="將清洗後氣象資料存入 SQLite (data.db)")
     parser.add_argument(
         "--db",
         type=str,
@@ -209,7 +221,8 @@ def main():
         central_rows = cursor.fetchall()
         print(f"  -> 共 {len(central_rows)} 筆預報:")
         for r in central_rows:
-            print(f"     日期: {r['dataDate']} | 最低溫: {r['minT']:<4.1f}°C | 最高溫: {r['maxT']:<4.1f}°C")
+            pop_val = r["pop"] if "pop" in r.keys() else 0
+            print(f"     日期: {r['dataDate']} | 最低溫: {r['minT']:<4.1f}°C | 最高溫: {r['maxT']:<4.1f}°C | 降雨機率: {pop_val:<3.0f}%")
     print("=" * 62)
 
 
