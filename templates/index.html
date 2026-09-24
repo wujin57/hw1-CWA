@@ -768,21 +768,25 @@
         </span>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px;">
-        💡 互動功能：地圖支援<b>各區域降雨機率</b>與<b>平均氣溫</b>圖層切換。<b>地圖放大時會自動展開細部市轄區（如台中西屯區、南屯區等）</b>，亦可使用快捷按鈕直接聚焦探索！
+        💡 互動功能：地圖支援<b>各區域降雨機率</b>與<b>平均氣溫</b>圖層切換。<b>滾輪放大地圖可自動展開全台各縣市鄉鎮區（包含台中西屯區、南屯區、雙北、高雄等全台 22 縣市）</b>，亦可使用下方捷徑按鈕直接飛往指定都會區！
       </p>
 
       <!-- 快速聚焦捷徑列與縮放層級狀態 -->
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
         <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-          <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">🏙️ 行政區探索快捷鍵：</span>
-          <button class="btn-city-jump" onclick="zoomToCity('taichung')" title="點擊放大至台中市區，展開西屯區、南屯區、北屯區等個別行政區">📍 台中市區 (西屯/南屯/北屯...)</button>
-          <button class="btn-city-jump" onclick="zoomToCity('taipei')">📍 台北/新北</button>
-          <button class="btn-city-jump" onclick="zoomToCity('kaohsiung')">📍 高雄市區</button>
-          <button class="btn-city-jump" onclick="zoomToCity('yilan')">📍 宜蘭地區</button>
-          <button class="btn-city-jump" onclick="zoomToCity('taiwan')">🗺️ 重置全景</button>
+          <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">🏙️ 全台都會探索捷徑：</span>
+          <button class="btn-city-jump" onclick="zoomToCity('taiwan')">🇹🇼 全台全景</button>
+          <button class="btn-city-jump" onclick="zoomToCity('taipei')">📍 台北/新北/基隆</button>
+          <button class="btn-city-jump" onclick="zoomToCity('taoyuan_hsinchu')">📍 桃園/新竹</button>
+          <button class="btn-city-jump" onclick="zoomToCity('taichung')" title="點擊放大至台中市區，展開西屯區、南屯區、北屯區等個別行政區">📍 台中市區 (西屯/南屯...)</button>
+          <button class="btn-city-jump" onclick="zoomToCity('changhua_nantou')">📍 彰化/南投/苗栗</button>
+          <button class="btn-city-jump" onclick="zoomToCity('tainan_chiayi')">📍 嘉義/台南/雲林</button>
+          <button class="btn-city-jump" onclick="zoomToCity('kaohsiung_pingtung')">📍 高雄/屏東</button>
+          <button class="btn-city-jump" onclick="zoomToCity('eastern')">📍 宜蘭/花蓮/台東</button>
+          <button class="btn-city-jump" onclick="zoomToCity('islands')">🌊 澎湖/金門/馬祖</button>
         </div>
         <div id="zoom-status-badge" class="zoom-status-badge">
-          🔍 全台分區視角 (放大地圖至市區可自動展開西屯、南屯等個別行政區)
+          🔍 全台分區視角 (放大地圖至市區可自動展開全台灣各鄉鎮市區)
         </div>
       </div>
 
@@ -868,42 +872,173 @@
       "東南部地區": { lat: 22.75, lng: 121.14, short: "東南部" }
     };
 
-    // 詳細市轄區/鄉鎮地理座標與微氣候特徵 (地圖放大時個別顯示，包含使用者特別指定之台中西屯區、南屯區等)
+    // 全台 22 縣市詳細市轄區與鄉鎮地理座標與微氣候資料 (地圖放大或選取時個別顯示)
     const DISTRICT_DATA = [
-      // 台中市轄區 (中部地區)
-      { name: "西屯區", fullName: "台中市 西屯區", city: "台中市", region: "中部地區", lat: 24.1627, lng: 120.6404, popOffset: 0, tempOffset: 0.2, landmark: "七期重劃區、逢甲商圈、中央公園" },
-      { name: "南屯區", fullName: "台中市 南屯區", city: "台中市", region: "中部地區", lat: 24.1378, lng: 120.6415, popOffset: -5, tempOffset: 0.3, landmark: "文心森林公園、彩虹眷村、豐樂雕塑公園" },
-      { name: "北屯區", fullName: "台中市 北屯區", city: "台中市", region: "中部地區", lat: 24.1812, lng: 120.6974, popOffset: +5, tempOffset: -0.2, landmark: "大坑風景區、洲際棒球場、捷運總站" },
-      { name: "西區",   fullName: "台中市 西區",   city: "台中市", region: "中部地區", lat: 24.1436, lng: 120.6628, popOffset: 0, tempOffset: 0.1, landmark: "草悟道、勤美誠品、國立台灣美術館" },
-      { name: "北區",   fullName: "台中市 北區",   city: "台中市", region: "中部地區", lat: 24.1565, lng: 120.6826, popOffset: 0, tempOffset: 0.0, landmark: "一中商圈、台中公園、中友百貨" },
-      { name: "南區",   fullName: "台中市 南區",   city: "台中市", region: "中部地區", lat: 24.1197, lng: 120.6635, popOffset: -5, tempOffset: 0.2, landmark: "中興大學、健康公園" },
-      { name: "中區",   fullName: "台中市 中區",   city: "台中市", region: "中部地區", lat: 24.1416, lng: 120.6837, popOffset: 0, tempOffset: 0.1, landmark: "台中火車站、綠川水岸、柳川水岸" },
-      { name: "大里區", fullName: "台中市 大里區", city: "台中市", region: "中部地區", lat: 24.1011, lng: 120.6775, popOffset: 0, tempOffset: 0.2, landmark: "Dali Art 藝術廣場、菩提醫院" },
-      { name: "豐原區", fullName: "台中市 豐原區", city: "台中市", region: "中部地區", lat: 24.2541, lng: 120.7225, popOffset: +5, tempOffset: -0.5, landmark: "廟東夜市、葫蘆墩公園、慈濟宮" },
+      // ── 1. 台北市 (北部地區) ──
+      { id: "tp_zhongzheng", name: "中正區", fullName: "台北市 中正區", city: "台北市", region: "北部地區", lat: 25.0324, lng: 121.5198, popOffset: 0, tempOffset: 0.1, landmark: "台北車站、中正紀念堂、總統府" },
+      { id: "tp_xinyi", name: "信義區", fullName: "台北市 信義區", city: "台北市", region: "北部地區", lat: 25.0339, lng: 121.5645, popOffset: +5, tempOffset: -0.2, landmark: "台北101、信義商圈、象山步道" },
+      { id: "tp_daan", name: "大安區", fullName: "台北市 大安區", city: "台北市", region: "北部地區", lat: 25.0263, lng: 121.5434, popOffset: 0, tempOffset: 0.0, landmark: "大安森林公園、永康街、台灣大學" },
+      { id: "tp_zhongshan", name: "中山區", fullName: "台北市 中山區", city: "台北市", region: "北部地區", lat: 25.0685, lng: 121.5330, popOffset: 0, tempOffset: 0.1, landmark: "行天宮、美麗華百樂園、條通商圈" },
+      { id: "tp_shilin", name: "士林區", fullName: "台北市 士林區", city: "台北市", region: "北部地區", lat: 25.0881, lng: 121.5245, popOffset: +5, tempOffset: -0.5, landmark: "士林夜市、故宮博物院、陽明山腳" },
+      { id: "tp_beitou", name: "北投區", fullName: "台北市 北投區", city: "台北市", region: "北部地區", lat: 25.1321, lng: 121.4987, popOffset: +10, tempOffset: -1.0, landmark: "北投溫泉博物館、地熱谷、關渡宮" },
+      { id: "tp_neihu", name: "內湖區", fullName: "台北市 內湖區", city: "台北市", region: "北部地區", lat: 25.0697, lng: 121.5888, popOffset: +5, tempOffset: -0.3, landmark: "內湖科技園區、大湖公園、碧湖公園" },
+      { id: "tp_wenshan", name: "文山區", fullName: "台北市 文山區", city: "台北市", region: "北部地區", lat: 24.9882, lng: 121.5753, popOffset: +5, tempOffset: -0.4, landmark: "貓空纜車、台北市立動物園、指南宮" },
+      { id: "tp_wanhua", name: "萬華區", fullName: "台北市 萬華區", city: "台北市", region: "北部地區", lat: 25.0354, lng: 121.4997, popOffset: 0, tempOffset: 0.2, landmark: "艋舺龍山寺、西門町商圈、剝皮寮老街" },
+      { id: "tp_songshan", name: "松山區", fullName: "台北市 松山區", city: "台北市", region: "北部地區", lat: 25.0500, lng: 121.5576, popOffset: 0, tempOffset: 0.0, landmark: "松山機場、饒河街觀光夜市、台北小巨蛋" },
 
-      // 雙北行政區 (北部地區)
-      { name: "中正區", fullName: "台北市 中正區", city: "台北市", region: "北部地區", lat: 25.0324, lng: 121.5198, popOffset: 0, tempOffset: 0.0, landmark: "台北車站、中正紀念堂、總統府" },
-      { name: "信義區", fullName: "台北市 信義區", city: "台北市", region: "北部地區", lat: 25.0339, lng: 121.5645, popOffset: +5, tempOffset: -0.2, landmark: "台北101、信義商圈、象山步道" },
-      { name: "大安區", fullName: "台北市 大安區", region: "北部地區", city: "台北市", lat: 25.0263, lng: 121.5434, popOffset: 0, tempOffset: 0.0, landmark: "大安森林公園、永康街、台灣大學" },
-      { name: "板橋區", fullName: "新北市 板橋區", city: "新北市", region: "北部地區", lat: 25.0142, lng: 121.4627, popOffset: 0, tempOffset: 0.2, landmark: "新北耶誕城、板橋車站、林本源園邸" },
-      { name: "淡水區", fullName: "新北市 淡水區", city: "新北市", region: "北部地區", lat: 25.1755, lng: 121.4428, popOffset: +10, tempOffset: -0.8, landmark: "淡水老街、漁人碼頭、紅毛城" },
+      // ── 2. 新北市 (北部地區) ──
+      { id: "nt_banqiao", name: "板橋區", fullName: "新北市 板橋區", city: "新北市", region: "北部地區", lat: 25.0142, lng: 121.4627, popOffset: 0, tempOffset: 0.2, landmark: "新北耶誕城、板橋車站特區、林家花園" },
+      { id: "nt_tamsui", name: "淡水區", fullName: "新北市 淡水區", city: "新北市", region: "北部地區", lat: 25.1755, lng: 121.4428, popOffset: +10, tempOffset: -0.8, landmark: "淡水老街、漁人碼頭、紅毛城古蹟" },
+      { id: "nt_xinzhuang", name: "新莊區", fullName: "新北市 新莊區", city: "新北市", region: "北部地區", lat: 25.0360, lng: 121.4504, popOffset: 0, tempOffset: 0.1, landmark: "新莊廟街、宏匯廣場、新莊棒球場" },
+      { id: "nt_zhonghe", name: "中和區", fullName: "新北市 中和區", city: "新北市", region: "北部地區", lat: 24.9995, lng: 121.5003, popOffset: 0, tempOffset: 0.2, landmark: "烘爐地南山福德宮、緬甸街、中和環球" },
+      { id: "nt_sanchong", name: "三重區", fullName: "新北市 三重區", city: "新北市", region: "北部地區", lat: 25.0615, lng: 121.4881, popOffset: 0, tempOffset: 0.1, landmark: "三和夜市、大都會公園、先嗇宮" },
+      { id: "nt_xindian", name: "新店區", fullName: "新北市 新店區", city: "新北市", region: "北部地區", lat: 24.9676, lng: 121.5418, popOffset: +5, tempOffset: -0.4, landmark: "碧潭風景區、陽光運動公園、裕隆城" },
+      { id: "nt_xizhi", name: "汐止區", fullName: "新北市 汐止區", city: "新北市", region: "北部地區", lat: 25.0630, lng: 121.6580, popOffset: +10, tempOffset: -0.5, landmark: "汐止遠雄廣場、新山夢湖、大尖山風景區" },
+      { id: "nt_linkou", name: "林口區", fullName: "新北市 林口區", city: "新北市", region: "北部地區", lat: 25.0775, lng: 121.3933, popOffset: +10, tempOffset: -1.2, landmark: "三井Outlet、林口竹林山觀音寺" },
+      { id: "nt_ruifang", name: "瑞芳區", fullName: "新北市 瑞芳區", city: "新北市", region: "北部地區", lat: 25.1089, lng: 121.8062, popOffset: +15, tempOffset: -1.5, landmark: "九份老街、金瓜石黃金博物館、陰陽海" },
 
-      // 高雄行政區 (南部地區)
-      { name: "三民區", fullName: "高雄市 三民區", city: "高雄市", region: "南部地區", lat: 22.6472, lng: 120.3089, popOffset: 0, tempOffset: 0.1, landmark: "高雄車站、愛河之心、科工館" },
-      { name: "左營區", fullName: "高雄市 左營區", city: "高雄市", region: "南部地區", lat: 22.6869, lng: 120.2944, popOffset: -5, tempOffset: 0.0, landmark: "蓮池潭、高鐵左營站、漢神巨蛋" },
-      { name: "苓雅區", fullName: "高雄市 苓雅區", city: "高雄市", region: "南部地區", lat: 22.6247, lng: 120.3121, popOffset: 0, tempOffset: 0.2, landmark: "高雄85大樓、文化中心、三多商圈" },
+      // ── 3. 基隆市 (北部地區) ──
+      { id: "kl_renai", name: "仁愛區", fullName: "基隆市 仁愛區", city: "基隆市", region: "北部地區", lat: 25.1276, lng: 121.7419, popOffset: +10, tempOffset: -0.5, landmark: "基隆廟口夜市、基隆海洋廣場" },
+      { id: "kl_zhongzheng", name: "中正區", fullName: "基隆市 中正區", city: "基隆市", region: "北部地區", lat: 25.1504, lng: 121.7645, popOffset: +15, tempOffset: -0.8, landmark: "和平島地質公園、潮境公園、正濱漁港彩虹屋" },
+      { id: "kl_qidu", name: "七堵區", fullName: "基隆市 七堵區", city: "基隆市", region: "北部地區", lat: 25.0957, lng: 121.7139, popOffset: +10, tempOffset: -0.4, landmark: "七堵鐵道紀念公園、瑪陵坑溪" },
 
-      // 台南行政區 (南部地區)
-      { name: "安平區", fullName: "台南市 安平區", city: "台南市", region: "南部地區", lat: 22.9987, lng: 120.1654, popOffset: -5, tempOffset: 0.1, landmark: "安平古堡、安平老街、億載金城" },
-      { name: "中西區", fullName: "台南市 中西區", city: "台南市", region: "南部地區", lat: 22.9922, lng: 120.1983, popOffset: 0, tempOffset: 0.2, landmark: "赤嵌樓、國華街美食、孔廟" },
+      // ── 4. 桃園市 (北部地區) ──
+      { id: "ty_taoyuan", name: "桃園區", fullName: "桃園市 桃園區", city: "桃園市", region: "北部地區", lat: 24.9936, lng: 121.3010, popOffset: 0, tempOffset: 0.0, landmark: "桃園藝文特區、景福宮、虎頭山環保公園" },
+      { id: "ty_zhongli", name: "中壢區", fullName: "桃園市 中壢區", city: "桃園市", region: "北部地區", lat: 24.9537, lng: 121.2257, popOffset: 0, tempOffset: 0.1, landmark: "中壢觀光夜市、高鐵桃園站青埔、華泰名品城" },
+      { id: "ty_guishan", name: "龜山區", fullName: "桃園市 龜山區", city: "桃園市", region: "北部地區", lat: 25.0006, lng: 121.3444, popOffset: +5, tempOffset: -0.3, landmark: "林口長庚醫院、華亞科技園區、壽山巖" },
+      { id: "ty_dayuan", name: "大園區", fullName: "桃園市 大園區", city: "桃園市", region: "北部地區", lat: 25.0631, lng: 121.1972, popOffset: +5, tempOffset: -0.5, landmark: "桃園國際機場、竹圍漁港航空城" },
+      { id: "ty_bade", name: "八德區", fullName: "桃園市 八德區", city: "桃園市", region: "北部地區", lat: 24.9287, lng: 121.2828, popOffset: 0, tempOffset: 0.0, landmark: "興仁花園夜市、八德落羽松森林" },
+      { id: "ty_daxi", name: "大溪區", fullName: "桃園市 大溪區", city: "桃園市", region: "北部地區", lat: 24.8836, lng: 121.2868, popOffset: +5, tempOffset: -0.4, landmark: "大溪老街、慈湖陵寢、石門水庫風景區" },
+      { id: "ty_yangmei", name: "楊梅區", fullName: "桃園市 楊梅區", city: "桃園市", region: "北部地區", lat: 24.9149, lng: 121.1460, popOffset: 0, tempOffset: 0.0, landmark: "味全埔心牧場、富岡老街鐵道" },
 
-      // 宜蘭 (東北部地區)
-      { name: "宜蘭市", fullName: "宜蘭縣 宜蘭市", city: "宜蘭縣", region: "東北部地區", lat: 24.7570, lng: 121.7530, popOffset: 0, tempOffset: 0.0, landmark: "幾米廣場、新月廣場、東門夜市" },
-      { name: "羅東鎮", fullName: "宜蘭縣 羅東鎮", city: "宜蘭縣", region: "東北部地區", lat: 24.6757, lng: 121.7672, popOffset: +5, tempOffset: -0.2, landmark: "羅東夜市、羅東林業文化園區" },
+      // ── 5. 新竹市 (北部地區) ──
+      { id: "hc_east", name: "東區", fullName: "新竹市 東區", city: "新竹市", region: "北部地區", lat: 24.7963, lng: 121.0008, popOffset: 0, tempOffset: 0.0, landmark: "新竹科學園區、國立清華大學、國立陽明交通大學" },
+      { id: "hc_north", name: "北區", fullName: "新竹市 北區", city: "新竹市", region: "北部地區", lat: 24.8115, lng: 120.9632, popOffset: 0, tempOffset: 0.1, landmark: "新竹都城隍廟、南寮漁港波光市集" },
+      { id: "hc_xiangshan", name: "香山區", fullName: "新竹市 香山區", city: "新竹市", region: "北部地區", lat: 24.7644, lng: 120.9238, popOffset: 0, tempOffset: 0.0, landmark: "香山濕地賞蟹步道、十七公里海岸風景區" },
 
-      // 花蓮/台東 (東部/東南部地區)
-      { name: "花蓮市", fullName: "花蓮縣 花蓮市", city: "花蓮縣", region: "東部地區", lat: 23.9872, lng: 121.6016, popOffset: 0, tempOffset: 0.0, landmark: "東大門夜市、太平洋公園" },
-      { name: "台東市", fullName: "台東縣 台東市", city: "台東縣", region: "東南部地區", lat: 22.7583, lng: 121.1444, popOffset: 0, tempOffset: 0.0, landmark: "鐵花村、台東森林公園" }
+      // ── 6. 新竹縣 (北部地區) ──
+      { id: "hcc_zhubei", name: "竹北市", fullName: "新竹縣 竹北市", city: "新竹縣", region: "北部地區", lat: 24.8387, lng: 121.0177, popOffset: 0, tempOffset: 0.1, landmark: "新竹高鐵特區、遠東百貨竹北店、水圳公園" },
+      { id: "hcc_zhudong", name: "竹東鎮", fullName: "新竹縣 竹東鎮", city: "新竹縣", region: "北部地區", lat: 24.7378, lng: 121.0898, popOffset: +5, tempOffset: -0.3, landmark: "竹東中央市場、蕭如松藝術園區" },
+      { id: "hcc_hukou", name: "湖口鄉", fullName: "新竹縣 湖口鄉", city: "新竹縣", region: "北部地區", lat: 24.9038, lng: 121.0437, popOffset: 0, tempOffset: 0.0, landmark: "湖口老街、湖口工業區、湖口服務區" },
+      { id: "hcc_guanxi", name: "關西鎮", fullName: "新竹縣 關西鎮", city: "新竹縣", region: "北部地區", lat: 24.7946, lng: 121.1764, popOffset: +5, tempOffset: -0.5, landmark: "六福村主題遊樂園、關西仙草博物館" },
+
+      // ── 7. 苗栗縣 (中部地區) ──
+      { id: "ml_miaoli", name: "苗栗市", fullName: "苗栗縣 苗栗市", city: "苗栗縣", region: "中部地區", lat: 24.5601, lng: 120.8214, popOffset: 0, tempOffset: 0.0, landmark: "貓裏山公園、功維敘百年鐵道隧道" },
+      { id: "ml_zhunan", name: "竹南鎮", fullName: "苗栗縣 竹南鎮", city: "苗栗縣", region: "中部地區", lat: 24.6858, lng: 120.8778, popOffset: 0, tempOffset: 0.1, landmark: "龍鳳漁港、竹南科學園區、崎頂子母隧道" },
+      { id: "ml_toufen", name: "頭份市", fullName: "苗栗縣 頭份市", city: "苗栗縣", region: "中部地區", lat: 24.6879, lng: 120.9119, popOffset: 0, tempOffset: 0.1, landmark: "尚順育樂世界、頭份後花園步道" },
+      { id: "ml_sanyi", name: "三義鄉", fullName: "苗栗縣 三義鄉", city: "苗栗縣", region: "中部地區", lat: 24.4116, lng: 120.7675, popOffset: +5, tempOffset: -0.8, landmark: "勝興車站、龍騰斷橋、三義木雕博物館" },
+      { id: "ml_houlong", name: "後龍鎮", fullName: "苗栗縣 後龍鎮", city: "苗栗縣", region: "中部地區", lat: 24.6163, lng: 120.7876, popOffset: 0, tempOffset: 0.0, landmark: "後龍好望角風景區、客家圓樓" },
+
+      // ── 8. 台中市 (中部地區 - 使用者重點指定) ──
+      { id: "tc_xitun", name: "西屯區", fullName: "台中市 西屯區", city: "台中市", region: "中部地區", lat: 24.1627, lng: 120.6404, popOffset: 0, tempOffset: 0.2, landmark: "台中國家歌劇院、逢甲商圈、秋紅谷生態公園、中央公園" },
+      { id: "tc_nantun", name: "南屯區", fullName: "台中市 南屯區", city: "台中市", region: "中部地區", lat: 24.1378, lng: 120.6415, popOffset: -5, tempOffset: 0.3, landmark: "文心森林公園、彩虹眷村、豐樂雕塑公園、IKEA台中店" },
+      { id: "tc_beitun", name: "北屯區", fullName: "台中市 北屯區", city: "台中市", region: "中部地區", lat: 24.1812, lng: 120.6974, popOffset: +5, tempOffset: -0.2, landmark: "大坑步道風景區、台中洲際棒球場、捷運北屯總站" },
+      { id: "tc_west", name: "西區", fullName: "台中市 西區", city: "台中市", region: "中部地區", lat: 24.1436, lng: 120.6628, popOffset: 0, tempOffset: 0.1, landmark: "草悟道、勤美誠品綠園道、國立台灣美術館、審計新村" },
+      { id: "tc_north", name: "北區", fullName: "台中市 北區", city: "台中市", region: "中部地區", lat: 24.1565, lng: 120.6826, popOffset: 0, tempOffset: 0.0, landmark: "一中商圈夜市、台中公園湖心亭、中友百貨" },
+      { id: "tc_south", name: "南區", fullName: "台中市 南區", city: "台中市", region: "中部地區", lat: 24.1197, lng: 120.6635, popOffset: -5, tempOffset: 0.2, landmark: "國立中興大學、健康公園、國立公共資訊圖書館" },
+      { id: "tc_central", name: "中區", fullName: "台中市 中區", city: "台中市", region: "中部地區", lat: 24.1416, lng: 120.6837, popOffset: 0, tempOffset: 0.1, landmark: "台中火車站舊站、綠川水岸景觀、柳川藍帶水岸、第二市場" },
+      { id: "tc_dali", name: "大里區", fullName: "台中市 大里區", city: "台中市", region: "中部地區", lat: 24.1011, lng: 120.6775, popOffset: 0, tempOffset: 0.2, landmark: "Dali Art 藝術廣場、台中軟體園區、菩提醫院" },
+      { id: "tc_fengyuan", name: "豐原區", fullName: "台中市 豐原區", city: "台中市", region: "中部地區", lat: 24.2541, lng: 120.7225, popOffset: +5, tempOffset: -0.3, landmark: "豐原廟東觀光夜市、葫蘆墩公園、慈濟宮" },
+      { id: "tc_qingshui", name: "清水區", fullName: "台中市 清水區", city: "台中市", region: "中部地區", lat: 24.2691, lng: 120.5739, popOffset: -5, tempOffset: 0.0, landmark: "高美濕地木棧道、港區藝術中心、清水服務區" },
+      { id: "tc_shalu", name: "沙鹿區", fullName: "台中市 沙鹿區", city: "台中市", region: "中部地區", lat: 24.2335, lng: 120.5663, popOffset: -5, tempOffset: 0.1, landmark: "靜宜商圈、弘光科技大學、沙鹿火車站商圈" },
+      { id: "tc_wuri", name: "烏日區", fullName: "台中市 烏日區", city: "台中市", region: "中部地區", lat: 24.1065, lng: 120.6231, popOffset: -5, tempOffset: 0.3, landmark: "高鐵台中站、台鐵新烏日站、烏日啤酒廠" },
+      { id: "tc_taiping", name: "太平區", fullName: "台中市 太平區", city: "台中市", region: "中部地區", lat: 24.1264, lng: 120.7183, popOffset: +5, tempOffset: -0.3, landmark: "太平蝙蝠洞、坪林森林公園、咬人狗坑登山步道" },
+
+      // ── 9. 彰化縣 (中部地區) ──
+      { id: "ch_changhua", name: "彰化市", fullName: "彰化縣 彰化市", city: "彰化縣", region: "中部地區", lat: 24.0818, lng: 120.5385, popOffset: 0, tempOffset: 0.1, landmark: "八卦山大佛風景區、彰化扇形車庫、南瑤宮" },
+      { id: "ch_lukang", name: "鹿港鎮", fullName: "彰化縣 鹿港鎮", city: "彰化縣", region: "中部地區", lat: 24.0560, lng: 120.4354, popOffset: -5, tempOffset: 0.2, landmark: "鹿港天后宮、鹿港老街、摸乳巷、玻璃媽祖廟" },
+      { id: "ch_yuanlin", name: "員林市", fullName: "彰化縣 員林市", city: "彰化縣", region: "中部地區", lat: 23.9589, lng: 120.5746, popOffset: 0, tempOffset: 0.2, landmark: "員林車站前美食街、百果山長溜滑梯" },
+      { id: "ch_tianwei", name: "田尾鄉", fullName: "彰化縣 田尾鄉", city: "彰化縣", region: "中部地區", lat: 23.8914, lng: 120.5284, popOffset: 0, tempOffset: 0.1, landmark: "田尾公路花園、花鄉休閒農業區" },
+
+      // ── 10. 南投縣 (中部地區) ──
+      { id: "nt_nantou", name: "南投市", fullName: "南投縣 南投市", city: "南投縣", region: "中部地區", lat: 23.9099, lng: 120.6865, popOffset: 0, tempOffset: 0.0, landmark: "中興新村綠色隧道、南投戲院老街" },
+      { id: "nt_caotun", name: "草屯鎮", fullName: "南投縣 草屯鎮", city: "南投縣", region: "中部地區", lat: 23.9785, lng: 120.6828, popOffset: 0, tempOffset: 0.1, landmark: "國立台灣工藝研究中心、九九峰自然保留區" },
+      { id: "nt_puli", name: "埔里鎮", fullName: "南投縣 埔里鎮", city: "南投縣", region: "中部地區", lat: 23.9664, lng: 120.9695, popOffset: +5, tempOffset: -0.8, landmark: "埔里酒廠、台灣地理中心碑、虎頭山飛行傘" },
+      { id: "nt_yuchi", name: "魚池鄉", fullName: "南投縣 魚池鄉", city: "南投縣", region: "中部地區", lat: 23.8967, lng: 120.9351, popOffset: +10, tempOffset: -1.2, landmark: "日月潭水社碼頭、伊達邵老街、向山遊客中心" },
+      { id: "nt_renai", name: "仁愛鄉", fullName: "南投縣 仁愛鄉", city: "南投縣", region: "中部地區", lat: 24.0206, lng: 121.1345, popOffset: +15, tempOffset: -3.5, landmark: "清境農場青青草原、合歡山武嶺、奧萬大森林" },
+      { id: "nt_zhushan", name: "竹山鎮", fullName: "南投縣 竹山鎮", city: "南投縣", region: "中部地區", lat: 23.7578, lng: 120.6844, popOffset: +5, tempOffset: -0.4, landmark: "竹山紫南宮求發財金、竹山天梯、杉林溪森林" },
+
+      // ── 11. 雲林縣 (中部地區) ──
+      { id: "yl_douliu", name: "斗六市", fullName: "雲林縣 斗六市", city: "雲林縣", region: "中部地區", lat: 23.7092, lng: 120.5435, popOffset: 0, tempOffset: 0.2, landmark: "斗六太平老街、雲林科技大學、斗六觀光夜市" },
+      { id: "yl_huwei", name: "虎尾鎮", fullName: "雲林縣 虎尾鎮", city: "雲林縣", region: "中部地區", lat: 23.7082, lng: 120.4332, popOffset: 0, tempOffset: 0.2, landmark: "虎尾糖廠鐵橋、雲林布袋戲館、合同廳舍星巴克" },
+      { id: "yl_beigang", name: "北港鎮", fullName: "雲林縣 北港鎮", city: "雲林縣", region: "中部地區", lat: 23.5755, lng: 120.3032, popOffset: -5, tempOffset: 0.3, landmark: "北港朝天宮媽祖廟、北港武德宮、觀光大橋" },
+      { id: "yl_mailiao", name: "麥寮鄉", fullName: "雲林縣 麥寮鄉", city: "雲林縣", region: "中部地區", lat: 23.7538, lng: 120.2588, popOffset: -5, tempOffset: 0.1, landmark: "台塑六輕工業園區、麥寮拱範宮" },
+
+      // ── 12. 嘉義市 (南部地區) ──
+      { id: "cy_east", name: "東區", fullName: "嘉義市 東區", city: "嘉義市", region: "南部地區", lat: 23.4839, lng: 120.4674, popOffset: 0, tempOffset: 0.0, landmark: "檜意森活村、蘭潭風景區月影潭心、嘉義公園" },
+      { id: "cy_west", name: "西區", fullName: "嘉義市 西區", city: "嘉義市", region: "南部地區", lat: 23.4777, lng: 120.4392, popOffset: 0, tempOffset: 0.1, landmark: "文化路觀光夜市、嘉義車站、嘉義市立美術館" },
+
+      // ── 13. 嘉義縣 (南部地區) ──
+      { id: "cyc_taibao", name: "太保市", fullName: "嘉義縣 太保市", city: "嘉義縣", region: "南部地區", lat: 23.4593, lng: 120.3323, popOffset: 0, tempOffset: 0.2, landmark: "國立故宮博物院南部院區、高鐵嘉義站" },
+      { id: "cyc_minxiong", name: "民雄鄉", fullName: "嘉義縣 民雄鄉", city: "嘉義縣", region: "南部地區", lat: 23.5516, lng: 120.4287, popOffset: 0, tempOffset: 0.1, landmark: "國立中正大學、民雄鬼屋、旺萊山鳳梨園" },
+      { id: "cyc_alishan", name: "阿里山鄉", fullName: "嘉義縣 阿里山鄉", city: "嘉義縣", region: "南部地區", lat: 23.5103, lng: 120.8037, popOffset: +20, tempOffset: -4.5, landmark: "阿里山國家森林遊樂區、祝山觀日出、姊妹潭神木" },
+
+      // ── 14. 台南市 (南部地區) ──
+      { id: "tn_zhongxi", name: "中西區", fullName: "台南市 中西區", city: "台南市", region: "南部地區", lat: 22.9922, lng: 120.1983, popOffset: 0, tempOffset: 0.2, landmark: "赤嵌樓、國華街美食街、海安路藝術街、全台首學孔廟" },
+      { id: "tn_anping", name: "安平區", fullName: "台南市 安平區", city: "台南市", region: "南部地區", lat: 22.9987, lng: 120.1654, popOffset: -5, tempOffset: 0.1, landmark: "安平古堡、安平樹屋、億載金城、漁光島沙灘" },
+      { id: "tn_east", name: "東區", fullName: "台南市 東區", city: "台南市", region: "南部地區", lat: 22.9868, lng: 120.2269, popOffset: 0, tempOffset: 0.1, landmark: "國立成功大學、南紡購物中心、巴克禮紀念公園" },
+      { id: "tn_yongkang", name: "永康區", fullName: "台南市 永康區", city: "台南市", region: "南部地區", lat: 23.0263, lng: 120.2570, popOffset: 0, tempOffset: 0.2, landmark: "台南市立圖書館總館、永康科技工業區" },
+      { id: "tn_xinshi", name: "新市區", fullName: "台南市 新市區", city: "台南市", region: "南部地區", lat: 23.0792, lng: 120.2941, popOffset: 0, tempOffset: 0.2, landmark: "南部科學園區 (台積電南科重鎮)、樹谷生活科學館" },
+      { id: "tn_xinying", name: "新營區", fullName: "台南市 新營區", city: "台南市", region: "南部地區", lat: 23.3106, lng: 120.3163, popOffset: 0, tempOffset: 0.1, landmark: "新營鐵道文化園區、南瀛綠都心公園" },
+      { id: "tn_beimen", name: "北門區", fullName: "台南市 北門區", city: "台南市", region: "南部地區", lat: 23.2678, lng: 120.1264, popOffset: -5, tempOffset: 0.2, landmark: "北門水晶教堂、井仔腳瓦盤鹽田、南鯤鯓代天府" },
+
+      // ── 15. 高雄市 (南部地區) ──
+      { id: "kh_lingya", name: "苓雅區", fullName: "高雄市 苓雅區", city: "高雄市", region: "南部地區", lat: 22.6247, lng: 120.3121, popOffset: 0, tempOffset: 0.2, landmark: "高雄85大樓、高雄市文化中心、三多商圈" },
+      { id: "kh_sanmin", name: "三民區", fullName: "高雄市 三民區", city: "高雄市", region: "南部地區", lat: 22.6472, lng: 120.3089, popOffset: 0, tempOffset: 0.1, landmark: "愛河之心、高雄車站、國立科學工藝博物館" },
+      { id: "kh_zuoying", name: "左營區", fullName: "高雄市 左營區", city: "高雄市", region: "南部地區", lat: 22.6869, lng: 120.2944, popOffset: -5, tempOffset: 0.0, landmark: "高鐵左營站、蓮池潭龍虎塔、漢神巨蛋購物廣場" },
+      { id: "kh_gushan", name: "鼓山區", fullName: "高雄市 鼓山區", city: "高雄市", region: "南部地區", lat: 22.6432, lng: 120.2764, popOffset: 0, tempOffset: 0.1, landmark: "駁二藝術特區、西子灣風景區、打狗英國領事館" },
+      { id: "kh_qianzhen", name: "前鎮區", fullName: "高雄市 前鎮區", city: "高雄市", region: "南部地區", lat: 22.5864, lng: 120.3162, popOffset: 0, tempOffset: 0.2, landmark: "統一夢時代購物中心摩天輪、高雄展覽館、亞洲新灣區" },
+      { id: "kh_fengshan", name: "鳳山區", fullName: "高雄市 鳳山區", city: "高雄市", region: "南部地區", lat: 22.6269, lng: 120.3572, popOffset: 0, tempOffset: 0.1, landmark: "衛武營國家藝術文化中心、大東文化藝術中心" },
+      { id: "kh_nanzi", name: "楠梓區", fullName: "高雄市 楠梓區", city: "高雄市", region: "南部地區", lat: 22.7290, lng: 120.3243, popOffset: -5, tempOffset: 0.2, landmark: "台積電高雄楠梓園區、國立高雄科技大學" },
+      { id: "kh_qijin", name: "旗津區", fullName: "高雄市 旗津區", city: "高雄市", region: "南部地區", lat: 22.5694, lng: 120.2882, popOffset: -5, tempOffset: 0.1, landmark: "旗津海水浴場、旗後燈塔、旗津海產街、星空隧道" },
+      { id: "kh_meinong", name: "美濃區", fullName: "高雄市 美濃區", city: "高雄市", region: "南部地區", lat: 22.8979, lng: 120.5414, popOffset: +5, tempOffset: -0.4, landmark: "美濃民俗村、美濃中正湖、客家紙傘粄條" },
+      { id: "kh_qishan", name: "旗山區", fullName: "高雄市 旗山區", city: "高雄市", region: "南部地區", lat: 22.8878, lng: 120.4820, popOffset: 0, tempOffset: 0.1, landmark: "旗山老街香蕉冰、旗山糖廠文化園區" },
+
+      // ── 16. 屏東縣 (南部地區) ──
+      { id: "pt_pingtung", name: "屏東市", fullName: "屏東縣 屏東市", city: "屏東縣", region: "南部地區", lat: 22.6761, lng: 120.4885, popOffset: 0, tempOffset: 0.3, landmark: "勝利星村創意生活園區、屏東觀光夜市" },
+      { id: "pt_hengchun", name: "恆春鎮", fullName: "屏東縣 恆春鎮", city: "屏東縣", region: "南部地區", lat: 22.0041, lng: 120.7447, popOffset: 0, tempOffset: 0.5, landmark: "墾丁大街夜市、鵝鑾鼻燈塔、南灣遊憩區、白沙灣" },
+      { id: "pt_donggang", name: "東港鎮", fullName: "屏東縣 東港鎮", city: "屏東縣", region: "南部地區", lat: 22.4674, lng: 120.4539, popOffset: -5, tempOffset: 0.2, landmark: "東港東隆宮迎王平安祭、大鵬灣國家風景區、黑鮪魚華僑市場" },
+      { id: "pt_chaozhou", name: "潮州鎮", fullName: "屏東縣 潮州鎮", city: "屏東縣", region: "南部地區", lat: 22.5506, lng: 120.5428, popOffset: 0, tempOffset: 0.2, landmark: "潮州正老牌燒冷冰、潮州日式歷史建築園區" },
+      { id: "pt_checheng", name: "車城鄉", fullName: "屏東縣 車城鄉", city: "屏東縣", region: "南部地區", lat: 22.0722, lng: 120.7118, popOffset: 0, tempOffset: 0.3, landmark: "車城福安宮土地公廟、國立海洋生物博物館 (海生館)" },
+
+      // ── 17. 宜蘭縣 (東北部地區) ──
+      { id: "il_yilan", name: "宜蘭市", fullName: "宜蘭縣 宜蘭市", city: "宜蘭縣", region: "東北部地區", lat: 24.7570, lng: 121.7530, popOffset: 0, tempOffset: 0.0, landmark: "幾米主題廣場、新月廣場、東門觀光夜市" },
+      { id: "il_luodong", name: "羅東鎮", fullName: "宜蘭縣 羅東鎮", city: "宜蘭縣", region: "東北部地區", lat: 24.6757, lng: 121.7672, popOffset: +5, tempOffset: -0.2, landmark: "羅東觀光夜市、羅東林業文化園區、羅東運動公園" },
+      { id: "il_jiaoxi", name: "礁溪鄉", fullName: "宜蘭縣 礁溪鄉", city: "宜蘭縣", region: "東北部地區", lat: 24.8290, lng: 121.7718, popOffset: +5, tempOffset: 0.2, landmark: "礁溪溫泉公園、湯圍溝溫泉、五峰旗瀑布" },
+      { id: "il_toucheng", name: "頭城鎮", fullName: "宜蘭縣 頭城鎮", city: "宜蘭縣", region: "東北部地區", lat: 24.8595, lng: 121.8233, popOffset: +5, tempOffset: -0.3, landmark: "烏石港衝浪基地、蘭陽博物館、頭城老街" },
+      { id: "il_suao", name: "蘇澳鎮", fullName: "宜蘭縣 蘇澳鎮", city: "宜蘭縣", region: "東北部地區", lat: 24.5947, lng: 121.8504, popOffset: +10, tempOffset: -0.5, landmark: "蘇澳冷泉公園、南方澳漁港南天宮金媽祖" },
+      { id: "il_dongshan", name: "冬山鄉", fullName: "宜蘭縣 冬山鄉", city: "宜蘭縣", region: "東北部地區", lat: 24.6362, lng: 121.7925, popOffset: +5, tempOffset: -0.2, landmark: "冬山河親水公園、冬山生態綠舟、梅花湖風景區" },
+
+      // ── 18. 花蓮縣 (東部地區) ──
+      { id: "hl_hualien", name: "花蓮市", fullName: "花蓮縣 花蓮市", city: "花蓮縣", region: "東部地區", lat: 23.9872, lng: 121.6016, popOffset: 0, tempOffset: 0.0, landmark: "東大門國際觀光夜市、花蓮文創園區、太平洋公園" },
+      { id: "hl_jian", name: "吉安鄉", fullName: "花蓮縣 吉安鄉", city: "花蓮縣", region: "東部地區", lat: 23.9582, lng: 121.5684, popOffset: 0, tempOffset: 0.0, landmark: "吉安慶修院、貨櫃星巴克洄瀾門市、知卡宣綠森林公園" },
+      { id: "hl_xincheng", name: "新城鄉", fullName: "花蓮縣 新城鄉", city: "花蓮縣", region: "東部地區", lat: 24.1278, lng: 121.6408, popOffset: +5, tempOffset: -0.3, landmark: "七星潭海岸風景區、佳興冰菓店、新城海堤" },
+      { id: "hl_xiulin", name: "秀林鄉", fullName: "花蓮縣 秀林鄉", city: "花蓮縣", region: "東部地區", lat: 24.1565, lng: 121.6212, popOffset: +15, tempOffset: -1.5, landmark: "太魯閣國家公園、燕子口步道、天祥、九曲洞" },
+      { id: "hl_shoufeng", name: "壽豐鄉", fullName: "花蓮縣 壽豐鄉", city: "花蓮縣", region: "東部地區", lat: 23.8703, lng: 121.5097, popOffset: +5, tempOffset: -0.4, landmark: "國立東華大學、鯉魚潭風景區、立川漁場" },
+      { id: "hl_yuli", name: "玉里鎮", fullName: "花蓮縣 玉里鎮", city: "花蓮縣", region: "東部地區", lat: 23.3364, lng: 121.3128, popOffset: 0, tempOffset: 0.1, landmark: "玉里麵老店、赤科山金針花海、客城鐵橋風景" },
+
+      // ── 19. 台東縣 (東南部地區) ──
+      { id: "tt_taitung", name: "台東市", fullName: "台東縣 台東市", city: "台東縣", region: "東南部地區", lat: 22.7583, lng: 121.1444, popOffset: 0, tempOffset: 0.0, landmark: "鐵花村音樂聚落、台東森林公園琵琶湖、富岡漁港" },
+      { id: "tt_beinan", name: "卑南鄉", fullName: "台東縣 卑南鄉", city: "台東縣", region: "東南部地區", lat: 22.7845, lng: 121.0833, popOffset: +5, tempOffset: -0.3, landmark: "知本溫泉風景區、初鹿牧場、富山護漁區" },
+      { id: "tt_luye", name: "鹿野鄉", fullName: "台東縣 鹿野鄉", city: "台東縣", region: "東南部地區", lat: 22.9135, lng: 121.1340, popOffset: +5, tempOffset: -0.5, landmark: "鹿野高台國際熱氣球嘉年華、龍田綠色隧道" },
+      { id: "tt_chishang", name: "池上鄉", fullName: "台東縣 池上鄉", city: "台東縣", region: "東南部地區", lat: 23.1232, lng: 121.2185, popOffset: 0, tempOffset: 0.0, landmark: "伯朗大道金城武樹、大坡池風景區、池上鐵路便當" },
+      { id: "tt_chenggong", name: "成功鎮", fullName: "台東縣 成功鎮", city: "台東縣", region: "東南部地區", lat: 23.1042, lng: 121.3795, popOffset: +5, tempOffset: -0.2, landmark: "三仙台跨海步橋、成功漁港旗魚季" },
+
+      // ── 20. 澎湖縣 (東南部地區/外島) ──
+      { id: "ph_magong", name: "馬公市", fullName: "澎湖縣 馬公市", city: "澎湖縣", region: "東南部地區", lat: 23.5711, lng: 119.5793, popOffset: -5, tempOffset: 0.2, landmark: "澎湖開台天后宮、中央老街、篤行十村文化園區、觀音亭花火節" },
+      { id: "ph_huxi", name: "湖西鄉", fullName: "澎湖縣 湖西鄉", city: "澎湖縣", region: "東南部地區", lat: 23.5833, lng: 119.6588, popOffset: -5, tempOffset: 0.1, landmark: "奎壁山摩西分海奇景、隘門沙灘金黃海岸" },
+      { id: "ph_baisha", name: "白沙鄉", fullName: "澎湖縣 白沙鄉", city: "澎湖縣", region: "東南部地區", lat: 23.6657, lng: 119.5936, popOffset: -5, tempOffset: 0.0, landmark: "澎湖跨海大橋、通樑古榕、中屯風力發電風車" },
+      { id: "ph_xiyu", name: "西嶼鄉", fullName: "澎湖縣 西嶼鄉", city: "澎湖縣", region: "東南部地區", lat: 23.6025, lng: 119.5085, popOffset: -5, tempOffset: 0.1, landmark: "二崁傳統古厝聚落、漁翁島燈塔、大菓葉柱狀玄武岩" },
+
+      // ── 21. 金門縣 (東南部地區/外島) ──
+      { id: "km_jincheng", name: "金城鎮", fullName: "金門縣 金城鎮", city: "金門縣", region: "東南部地區", lat: 24.4361, lng: 118.3186, popOffset: -10, tempOffset: -0.2, landmark: "莒光樓、模範街紅磚老街、後浦老街、清總兵署" },
+      { id: "km_jinhu", name: "金湖鎮", fullName: "金門縣 金湖鎮", city: "金門縣", region: "東南部地區", lat: 24.4414, lng: 118.4194, popOffset: -5, tempOffset: -0.2, landmark: "太武山「毋忘在莒」勒石、陳景蘭洋樓、成功海防坑道" },
+      { id: "km_jinsha", name: "金沙鎮", fullName: "金門縣 金沙鎮", city: "金門縣", region: "東南部地區", lat: 24.4908, lng: 118.4283, popOffset: -5, tempOffset: -0.3, landmark: "沙美摩洛哥 (老街頹屋)、馬山觀測所、山后民俗文化村" },
+      { id: "km_lieyu", name: "烈嶼鄉", fullName: "金門縣 烈嶼鄉", city: "金門縣", region: "東南部地區", lat: 24.4289, lng: 118.2435, popOffset: -10, tempOffset: -0.2, landmark: "小金門勇士堡、地雷主題館、雙口海邊遠眺廈門" },
+
+      // ── 22. 連江縣馬祖 (東南部地區/外島) ──
+      { id: "matsu_nangan", name: "南竿鄉", fullName: "連江縣 南竿鄉", city: "連江縣", region: "東南部地區", lat: 26.1557, lng: 119.9392, popOffset: 0, tempOffset: -1.5, landmark: "八八坑道高粱酒窖、馬祖巨神像、津沙閩東聚落、北海坑道藍眼淚" },
+      { id: "matsu_beigan", name: "北竿鄉", fullName: "連江縣 北竿鄉", city: "連江縣", region: "東南部地區", lat: 26.2238, lng: 119.9886, popOffset: 0, tempOffset: -1.8, landmark: "芹壁閩東古厝聚落、壁山全景觀景台、坂里金黃沙灘" }
     ];
 
     const ZOOM_THRESHOLD = 9; // 地圖縮放層級 >= 9 時自動啟用鄉鎮市區細部模式
@@ -1065,7 +1200,7 @@
       updateMapPopDropdown();
     }
 
-    // 更新各區域與細部行政區降雨機率下拉選單選項
+    // 更新各區域與細部行政區降雨機率下拉選單選項 (涵蓋全台 22 縣市所有行政區)
     function updateMapPopDropdown() {
       const popSelect = document.getElementById("map-pop-select");
       if (!popSelect || !allForecasts.length) return;
@@ -1075,12 +1210,12 @@
       // 預設全景選項
       const defaultOpt = document.createElement("option");
       defaultOpt.value = "ALL";
-      defaultOpt.textContent = `📍 【全台 6 區總覽】(點選切換地區/市轄區)`;
+      defaultOpt.textContent = `📍 【全台 6 大分區總覽】(點選可切換至任一行政區)`;
       popSelect.appendChild(defaultOpt);
 
       // 分組 1: 六大氣象分區
       const regGroup = document.createElement("optgroup");
-      regGroup.label = "── 🗺️ 六大氣象分區 ──";
+      regGroup.label = "── 🇹🇼 全台六大氣象統計分區 ──";
       const dateRecords = allForecasts.filter(d => d.dataDate === currentMapDate);
       const sortedRegs = [...dateRecords].sort((a, b) => (b.pop || 0) - (a.pop || 0));
 
@@ -1096,37 +1231,25 @@
       });
       popSelect.appendChild(regGroup);
 
-      // 分組 2: 台中市各行政區細節 (西屯區、南屯區等)
-      const tcGroup = document.createElement("optgroup");
-      tcGroup.label = "── 🏙️ 台中市行政區細節 (點選自動放大) ──";
-      const tcDistricts = DISTRICT_DATA.filter(d => d.city === "台中市");
-      tcDistricts.forEach(dist => {
-        const weather = getDistrictWeather(dist, currentMapDate);
-        const opt = document.createElement("option");
-        opt.value = `DISTRICT:${dist.name}`;
-        opt.textContent = `📍 ${dist.fullName} — 降雨機率 ${weather.pop}% (${getPopDescription(weather.pop).slice(0, 4)})`;
-        if (currentSelectedDistrict === dist.name) {
-          opt.selected = true;
-        }
-        tcGroup.appendChild(opt);
+      // 分組 2+: 全台各縣市行政區 (依照 22 縣市個別分組)
+      const cities = [...new Set(DISTRICT_DATA.map(d => d.city))];
+      cities.forEach(cityName => {
+        const cityDistricts = DISTRICT_DATA.filter(d => d.city === cityName);
+        const group = document.createElement("optgroup");
+        const icon = (cityName.includes("澎湖") || cityName.includes("金門") || cityName.includes("連江")) ? "🌊" : "🏙️";
+        group.label = `── ${icon} ${cityName} (${cityDistricts.length} 個行政區) ──`;
+        cityDistricts.forEach(dist => {
+          const weather = getDistrictWeather(dist, currentMapDate);
+          const opt = document.createElement("option");
+          opt.value = `DISTRICT:${dist.id}`;
+          opt.textContent = `📍 ${dist.fullName} — 降雨機率 ${weather.pop}% (${getPopDescription(weather.pop).slice(0, 4)})`;
+          if (currentSelectedDistrict === dist.id) {
+            opt.selected = true;
+          }
+          group.appendChild(opt);
+        });
+        popSelect.appendChild(group);
       });
-      popSelect.appendChild(tcGroup);
-
-      // 分組 3: 其它重點市轄區
-      const otherGroup = document.createElement("optgroup");
-      otherGroup.label = "── 🏙️ 其它縣市熱門行政區 ──";
-      const otherDistricts = DISTRICT_DATA.filter(d => d.city !== "台中市");
-      otherDistricts.forEach(dist => {
-        const weather = getDistrictWeather(dist, currentMapDate);
-        const opt = document.createElement("option");
-        opt.value = `DISTRICT:${dist.name}`;
-        opt.textContent = `📍 ${dist.fullName} — 降雨機率 ${weather.pop}%`;
-        if (currentSelectedDistrict === dist.name) {
-          opt.selected = true;
-        }
-        otherGroup.appendChild(opt);
-      });
-      popSelect.appendChild(otherGroup);
     }
 
     // 核心互動：降雨機率下拉選單變更時觸發
@@ -1135,8 +1258,8 @@
       const val = select.value;
 
       if (val.startsWith("DISTRICT:")) {
-        const distName = val.replace("DISTRICT:", "");
-        selectDistrict(distName, true);
+        const distId = val.replace("DISTRICT:", "");
+        selectDistrict(distId, true);
       } else if (val && val !== "ALL") {
         currentSelectedDistrict = null;
         currentSelectedRegion = val;
@@ -1159,7 +1282,7 @@
       updateTaiwanMapMarkers();
 
       if (currentSelectedDistrict) {
-        const dist = DISTRICT_DATA.find(d => d.name === currentSelectedDistrict);
+        const dist = DISTRICT_DATA.find(d => d.id === currentSelectedDistrict || d.name === currentSelectedDistrict);
         if (dist) updateDetailCardForDistrict(dist);
       } else {
         const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
@@ -1175,7 +1298,7 @@
       updateTaiwanMapMarkers();
 
       if (currentSelectedDistrict) {
-        const dist = DISTRICT_DATA.find(d => d.name === currentSelectedDistrict);
+        const dist = DISTRICT_DATA.find(d => d.id === currentSelectedDistrict || d.name === currentSelectedDistrict);
         if (dist) updateDetailCardForDistrict(dist);
       } else {
         const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
@@ -1183,21 +1306,33 @@
       }
     }
 
-    // 快速聚焦指定城市 (例如台中市西屯區、南屯區)
+    // 快速聚焦指定都會區 (全台各大生活圈)
     function zoomToCity(city) {
       if (!mapInstance) return;
       if (city === 'taichung') {
         mapInstance.setView([24.1627, 120.6404], 12);
-        selectDistrict("西屯區", false);
+        selectDistrict("tc_xitun", false);
       } else if (city === 'taipei') {
-        mapInstance.setView([25.0339, 121.5434], 12);
-        selectDistrict("中正區", false);
-      } else if (city === 'kaohsiung') {
-        mapInstance.setView([22.6472, 120.3089], 12);
-        selectDistrict("三民區", false);
-      } else if (city === 'yilan') {
-        mapInstance.setView([24.7570, 121.7530], 11);
-        selectDistrict("宜蘭市", false);
+        mapInstance.setView([25.04, 121.53], 12);
+        selectDistrict("tp_zhongzheng", false);
+      } else if (city === 'taoyuan_hsinchu') {
+        mapInstance.setView([24.88, 121.15], 11);
+        selectDistrict("ty_taoyuan", false);
+      } else if (city === 'changhua_nantou') {
+        mapInstance.setView([23.95, 120.65], 11);
+        selectDistrict("ch_changhua", false);
+      } else if (city === 'tainan_chiayi') {
+        mapInstance.setView([23.15, 120.25], 11);
+        selectDistrict("tn_zhongxi", false);
+      } else if (city === 'kaohsiung_pingtung') {
+        mapInstance.setView([22.62, 120.35], 11);
+        selectDistrict("kh_lingya", false);
+      } else if (city === 'eastern') {
+        mapInstance.setView([24.0, 121.60], 10);
+        selectDistrict("hl_hualien", false);
+      } else if (city === 'islands') {
+        mapInstance.setView([23.57, 119.58], 10);
+        selectDistrict("ph_magong", false);
       } else {
         mapInstance.setView([23.7, 120.95], 7);
         currentSelectedDistrict = null;
@@ -1205,12 +1340,12 @@
       }
     }
 
-    // 選取並定位到特定細部行政區 (如西屯區、南屯區)
-    function selectDistrict(distName, animate = true) {
-      const dist = DISTRICT_DATA.find(d => d.name === distName);
+    // 選取並定位到特定細部行政區 (支援全台 86 個鄉鎮市區，包含西屯區、南屯區)
+    function selectDistrict(distId, animate = true) {
+      const dist = DISTRICT_DATA.find(d => d.id === distId || d.name === distId);
       if (!dist) return;
 
-      currentSelectedDistrict = dist.name;
+      currentSelectedDistrict = dist.id;
       currentSelectedRegion = dist.region;
 
       // 同步上方選單與圖表
@@ -1220,7 +1355,7 @@
       // 移動地圖並開啟彈窗
       if (mapInstance) {
         const currentZoom = mapInstance.getZoom();
-        const targetZoom = Math.max(currentZoom, 12);
+        const targetZoom = Math.max(currentZoom, 11);
         if (animate) {
           mapInstance.setView([dist.lat, dist.lng], targetZoom, { animate: true });
         } else {
@@ -1229,7 +1364,7 @@
 
         // 開啟該行政區彈窗
         setTimeout(() => {
-          const marker = districtMarkers[dist.name];
+          const marker = districtMarkers[dist.id] || districtMarkers[dist.name];
           if (marker) marker.openPopup();
         }, 300);
       }
@@ -1239,7 +1374,7 @@
 
       // 同步下拉選單選取狀態
       const popSelect = document.getElementById("map-pop-select");
-      if (popSelect) popSelect.value = `DISTRICT:${dist.name}`;
+      if (popSelect) popSelect.value = `DISTRICT:${dist.id}`;
     }
 
     // 聚焦大分區
@@ -1357,7 +1492,14 @@
         `SELECT id, regionName, dataDate, minT, maxT, pop FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
 
       // 2. 更新折線圖標題
-      document.getElementById("chart-title").textContent = `Temperature Forecast - ${regionName}`;
+      if (currentSelectedDistrict) {
+        const dist = DISTRICT_DATA.find(d => d.id === currentSelectedDistrict || d.name === currentSelectedDistrict);
+        document.getElementById("chart-title").textContent = dist 
+          ? `Temperature Forecast - ${dist.fullName} (${regionName})`
+          : `Temperature Forecast - ${regionName}`;
+      } else {
+        document.getElementById("chart-title").textContent = `Temperature Forecast - ${regionName}`;
+      }
 
       // 3. 繪製最高/最低溫折線圖
       const dates = regionData.map(d => d.dataDate.slice(5));
@@ -1504,7 +1646,7 @@
       if (isDetailed) {
         if (badge) {
           badge.className = "zoom-status-badge detailed";
-          badge.innerHTML = "✨ <b>詳細行政區模式已啟動</b> (顯示台中西屯、南屯等個別行政區)";
+          badge.innerHTML = "✨ <b>全台鄉鎮市區細部模式已啟動</b> (已展開全台 22 縣市個別行政區預報)";
         }
         // 隱藏大區域標籤，顯示細部行政區標記與標籤
         Object.values(mapLabelMarkers).forEach(m => mapInstance.removeLayer(m));
@@ -1513,7 +1655,7 @@
       } else {
         if (badge) {
           badge.className = "zoom-status-badge";
-          badge.innerHTML = "🔍 <b>全台六大分區視角</b> (滑鼠滾輪放大地圖可展開西屯、南屯等個別行政區)";
+          badge.innerHTML = "🔍 <b>全台六大分區視角</b> (滑鼠滾輪放大地圖可展開全台灣各鄉鎮市區)";
         }
         // 顯示大區域標籤，隱藏細部行政區
         Object.values(mapLabelMarkers).forEach(m => m.addTo(mapInstance));
@@ -1622,7 +1764,7 @@
         `);
 
         dMarker.on("click", () => {
-          selectDistrict(dist.name, false);
+          selectDistrict(dist.id, false);
         });
 
         const dLabel = currentMapMode === "pop" ? `${dist.name} ${weather.pop}%` : `${dist.name} ${weather.avg}°C`;
@@ -1634,8 +1776,8 @@
           })
         });
 
-        districtMarkers[dist.name] = dMarker;
-        districtLabelMarkers[dist.name] = dLabelMarker;
+        districtMarkers[dist.id] = dMarker;
+        districtLabelMarkers[dist.id] = dLabelMarker;
       });
 
       // 初始化觸發一次縮放檢查
@@ -1688,8 +1830,8 @@
       DISTRICT_DATA.forEach(dist => {
         const weather = getDistrictWeather(dist, currentMapDate);
         const color = currentMapMode === "pop" ? getPopColor(weather.pop) : getTempColor(weather.avg);
-        const dMarker = districtMarkers[dist.name];
-        const dLabelMarker = districtLabelMarkers[dist.name];
+        const dMarker = districtMarkers[dist.id] || districtMarkers[dist.name];
+        const dLabelMarker = districtLabelMarkers[dist.id] || districtLabelMarkers[dist.name];
 
         if (dMarker) {
           dMarker.setStyle({ fillColor: color });
