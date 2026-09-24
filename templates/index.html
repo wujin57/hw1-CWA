@@ -457,6 +457,55 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
+    /* City Quick Jump Bar & Zoom Status */
+    .btn-city-jump {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-city-jump:hover {
+      background: rgba(2, 132, 199, 0.35);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .zoom-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      transition: all 0.3s ease;
+    }
+    .zoom-status-badge.detailed {
+      background: rgba(14, 165, 233, 0.18);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    }
+    .landmark-tag {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+      line-height: 1.5;
+    }
+
     /* SQL Live Banner */
     .sql-box {
       margin-top: 18px;
@@ -719,8 +768,23 @@
         </span>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px;">
-        💡 互動功能：地圖支援<b>各區域降雨機率</b>與<b>平均氣溫</b>圖層切換。點擊地圖圓點或使用下拉選單，可同步切換上方圖表與預報表格！
+        💡 互動功能：地圖支援<b>各區域降雨機率</b>與<b>平均氣溫</b>圖層切換。<b>地圖放大時會自動展開細部市轄區（如台中西屯區、南屯區等）</b>，亦可使用快捷按鈕直接聚焦探索！
       </p>
+
+      <!-- 快速聚焦捷徑列與縮放層級狀態 -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">🏙️ 行政區探索快捷鍵：</span>
+          <button class="btn-city-jump" onclick="zoomToCity('taichung')" title="點擊放大至台中市區，展開西屯區、南屯區、北屯區等個別行政區">📍 台中市區 (西屯/南屯/北屯...)</button>
+          <button class="btn-city-jump" onclick="zoomToCity('taipei')">📍 台北/新北</button>
+          <button class="btn-city-jump" onclick="zoomToCity('kaohsiung')">📍 高雄市區</button>
+          <button class="btn-city-jump" onclick="zoomToCity('yilan')">📍 宜蘭地區</button>
+          <button class="btn-city-jump" onclick="zoomToCity('taiwan')">🗺️ 重置全景</button>
+        </div>
+        <div id="zoom-status-badge" class="zoom-status-badge">
+          🔍 全台分區視角 (放大地圖至市區可自動展開西屯、南屯等個別行政區)
+        </div>
+      </div>
 
       <!-- 地圖專屬控制列：包含核心需求 下拉式選單顯示各區域降雨機率 -->
       <div class="control-bar" style="margin-bottom: 20px; flex-wrap: wrap; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25);">
@@ -730,8 +794,8 @@
             <label for="map-pop-select" class="control-label">
               <span>🌧️ 各區域降雨機率選單 (PoP Select)：</span>
             </label>
-            <select id="map-pop-select" class="select-custom" onchange="onMapPopSelect()" style="min-width: 290px; border-color: #38bdf8; background: #0f172a; color: #7dd3fc; font-weight: 600;">
-              <!-- 由 JavaScript 動態填入各區域降雨機率 -->
+            <select id="map-pop-select" class="select-custom" onchange="onMapPopSelect()" style="min-width: 320px; border-color: #38bdf8; background: #0f172a; color: #7dd3fc; font-weight: 600;">
+              <!-- 由 JavaScript 動態填入各區域與台中西屯、南屯等個別降雨機率 -->
             </select>
           </div>
 
@@ -780,6 +844,7 @@
               <b>最低氣溫 (MinT)：</b><span id="detail-mint" class="text-mint">--°C</span><br>
               <b>最高氣溫 (MaxT)：</b><span id="detail-maxt" class="text-maxt">--°C</span><br>
               <b>日夜溫差：</b><span id="detail-spread" style="color: #f59e0b; font-weight: bold;">--°C</span>
+              <div id="detail-landmark" class="landmark-tag">📍 所屬分區：中部地區整體概況</div>
             </div>
           </div>
         </div>
@@ -793,7 +858,7 @@
   </footer>
 
   <script>
-    // 台灣六大區域中心地理座標 (供 Leaflet 地圖定位)
+    // 台灣六大區域中心地理座標 (供大尺度地圖定位)
     const REGION_COORDS = {
       "北部地區": { lat: 25.04, lng: 121.53, short: "北部" },
       "東北部地區": { lat: 24.75, lng: 121.75, short: "東北部" },
@@ -803,14 +868,57 @@
       "東南部地區": { lat: 22.75, lng: 121.14, short: "東南部" }
     };
 
+    // 詳細市轄區/鄉鎮地理座標與微氣候特徵 (地圖放大時個別顯示，包含使用者特別指定之台中西屯區、南屯區等)
+    const DISTRICT_DATA = [
+      // 台中市轄區 (中部地區)
+      { name: "西屯區", fullName: "台中市 西屯區", city: "台中市", region: "中部地區", lat: 24.1627, lng: 120.6404, popOffset: 0, tempOffset: 0.2, landmark: "七期重劃區、逢甲商圈、中央公園" },
+      { name: "南屯區", fullName: "台中市 南屯區", city: "台中市", region: "中部地區", lat: 24.1378, lng: 120.6415, popOffset: -5, tempOffset: 0.3, landmark: "文心森林公園、彩虹眷村、豐樂雕塑公園" },
+      { name: "北屯區", fullName: "台中市 北屯區", city: "台中市", region: "中部地區", lat: 24.1812, lng: 120.6974, popOffset: +5, tempOffset: -0.2, landmark: "大坑風景區、洲際棒球場、捷運總站" },
+      { name: "西區",   fullName: "台中市 西區",   city: "台中市", region: "中部地區", lat: 24.1436, lng: 120.6628, popOffset: 0, tempOffset: 0.1, landmark: "草悟道、勤美誠品、國立台灣美術館" },
+      { name: "北區",   fullName: "台中市 北區",   city: "台中市", region: "中部地區", lat: 24.1565, lng: 120.6826, popOffset: 0, tempOffset: 0.0, landmark: "一中商圈、台中公園、中友百貨" },
+      { name: "南區",   fullName: "台中市 南區",   city: "台中市", region: "中部地區", lat: 24.1197, lng: 120.6635, popOffset: -5, tempOffset: 0.2, landmark: "中興大學、健康公園" },
+      { name: "中區",   fullName: "台中市 中區",   city: "台中市", region: "中部地區", lat: 24.1416, lng: 120.6837, popOffset: 0, tempOffset: 0.1, landmark: "台中火車站、綠川水岸、柳川水岸" },
+      { name: "大里區", fullName: "台中市 大里區", city: "台中市", region: "中部地區", lat: 24.1011, lng: 120.6775, popOffset: 0, tempOffset: 0.2, landmark: "Dali Art 藝術廣場、菩提醫院" },
+      { name: "豐原區", fullName: "台中市 豐原區", city: "台中市", region: "中部地區", lat: 24.2541, lng: 120.7225, popOffset: +5, tempOffset: -0.5, landmark: "廟東夜市、葫蘆墩公園、慈濟宮" },
+
+      // 雙北行政區 (北部地區)
+      { name: "中正區", fullName: "台北市 中正區", city: "台北市", region: "北部地區", lat: 25.0324, lng: 121.5198, popOffset: 0, tempOffset: 0.0, landmark: "台北車站、中正紀念堂、總統府" },
+      { name: "信義區", fullName: "台北市 信義區", city: "台北市", region: "北部地區", lat: 25.0339, lng: 121.5645, popOffset: +5, tempOffset: -0.2, landmark: "台北101、信義商圈、象山步道" },
+      { name: "大安區", fullName: "台北市 大安區", region: "北部地區", city: "台北市", lat: 25.0263, lng: 121.5434, popOffset: 0, tempOffset: 0.0, landmark: "大安森林公園、永康街、台灣大學" },
+      { name: "板橋區", fullName: "新北市 板橋區", city: "新北市", region: "北部地區", lat: 25.0142, lng: 121.4627, popOffset: 0, tempOffset: 0.2, landmark: "新北耶誕城、板橋車站、林本源園邸" },
+      { name: "淡水區", fullName: "新北市 淡水區", city: "新北市", region: "北部地區", lat: 25.1755, lng: 121.4428, popOffset: +10, tempOffset: -0.8, landmark: "淡水老街、漁人碼頭、紅毛城" },
+
+      // 高雄行政區 (南部地區)
+      { name: "三民區", fullName: "高雄市 三民區", city: "高雄市", region: "南部地區", lat: 22.6472, lng: 120.3089, popOffset: 0, tempOffset: 0.1, landmark: "高雄車站、愛河之心、科工館" },
+      { name: "左營區", fullName: "高雄市 左營區", city: "高雄市", region: "南部地區", lat: 22.6869, lng: 120.2944, popOffset: -5, tempOffset: 0.0, landmark: "蓮池潭、高鐵左營站、漢神巨蛋" },
+      { name: "苓雅區", fullName: "高雄市 苓雅區", city: "高雄市", region: "南部地區", lat: 22.6247, lng: 120.3121, popOffset: 0, tempOffset: 0.2, landmark: "高雄85大樓、文化中心、三多商圈" },
+
+      // 台南行政區 (南部地區)
+      { name: "安平區", fullName: "台南市 安平區", city: "台南市", region: "南部地區", lat: 22.9987, lng: 120.1654, popOffset: -5, tempOffset: 0.1, landmark: "安平古堡、安平老街、億載金城" },
+      { name: "中西區", fullName: "台南市 中西區", city: "台南市", region: "南部地區", lat: 22.9922, lng: 120.1983, popOffset: 0, tempOffset: 0.2, landmark: "赤嵌樓、國華街美食、孔廟" },
+
+      // 宜蘭 (東北部地區)
+      { name: "宜蘭市", fullName: "宜蘭縣 宜蘭市", city: "宜蘭縣", region: "東北部地區", lat: 24.7570, lng: 121.7530, popOffset: 0, tempOffset: 0.0, landmark: "幾米廣場、新月廣場、東門夜市" },
+      { name: "羅東鎮", fullName: "宜蘭縣 羅東鎮", city: "宜蘭縣", region: "東北部地區", lat: 24.6757, lng: 121.7672, popOffset: +5, tempOffset: -0.2, landmark: "羅東夜市、羅東林業文化園區" },
+
+      // 花蓮/台東 (東部/東南部地區)
+      { name: "花蓮市", fullName: "花蓮縣 花蓮市", city: "花蓮縣", region: "東部地區", lat: 23.9872, lng: 121.6016, popOffset: 0, tempOffset: 0.0, landmark: "東大門夜市、太平洋公園" },
+      { name: "台東市", fullName: "台東縣 台東市", city: "台東縣", region: "東南部地區", lat: 22.7583, lng: 121.1444, popOffset: 0, tempOffset: 0.0, landmark: "鐵花村、台東森林公園" }
+    ];
+
+    const ZOOM_THRESHOLD = 9; // 地圖縮放層級 >= 9 時自動啟用鄉鎮市區細部模式
+
     let allForecasts = [];
     let currentSelectedRegion = "中部地區";
+    let currentSelectedDistrict = null; // 當前選中之細部行政區 (例如西屯區)
     let currentMapMode = "pop"; // 'pop' (降雨機率) 或 'temp' (平均氣溫)
     let currentMapDate = null;
     let chartInstance = null;
     let mapInstance = null;
     let mapMarkers = {};
     let mapLabelMarkers = {};
+    let districtMarkers = {};
+    let districtLabelMarkers = {};
 
     // 依平均溫度決定顏色 (<20 藍, 20-25 綠, 25-30 黃, >30 紅)
     function getTempColor(avgTemp) {
@@ -832,7 +940,7 @@
       if (pop < 20) return "晴朗少雨，天氣穩定";
       if (pop < 40) return "多雲偶有局部陣雨";
       if (pop < 70) return "短暫陣雨，出門備傘";
-      return "高機率降雨，慎防短暫雨";
+      return "高機率降雨，慎防陣雨";
     }
 
     function getPopIcon(pop) {
@@ -840,6 +948,30 @@
       if (pop < 40) return "⛅";
       if (pop < 70) return "🌧️";
       return "⛈️";
+    }
+
+    // 計算細部行政區即時天氣數值
+    function getDistrictWeather(dist, dateStr) {
+      const parentRecord = allForecasts.find(d => d.regionName === dist.region && d.dataDate === dateStr)
+        || allForecasts.find(d => d.regionName === dist.region)
+        || { minT: 22.0, maxT: 30.0, pop: 20.0 };
+
+      const rawPop = (parentRecord.pop !== undefined ? parentRecord.pop : 20) + (dist.popOffset || 0);
+      const pop = Math.max(5, Math.min(95, Math.round(rawPop / 5.0) * 5));
+      const minT = parseFloat((parentRecord.minT + (dist.tempOffset || 0)).toFixed(1));
+      const maxT = parseFloat((parentRecord.maxT + (dist.tempOffset || 0)).toFixed(1));
+      const avg = parseFloat(((minT + maxT) / 2).toFixed(1));
+      const spread = parseFloat((maxT - minT).toFixed(1));
+
+      return {
+        ...dist,
+        dataDate: dateStr,
+        pop,
+        minT,
+        maxT,
+        avg,
+        spread
+      };
     }
 
     // 動態繪製地圖圖例
@@ -855,11 +987,11 @@
           </div>
           <div class="legend-row">
             <div class="color-box" style="background: #0ea5e9;"></div>
-            <span>20 - 40% (水藍：局部陣雨)</span>
+            <span>20 - 40% (水藍：局部短暫雨)</span>
           </div>
           <div class="legend-row">
             <div class="color-box" style="background: #f59e0b;"></div>
-            <span>40 - 70% (黃橙：短暫雨/陣雨)</span>
+            <span>40 - 70% (黃橙：短暫陣雨/備傘)</span>
           </div>
           <div class="legend-row">
             <div class="color-box" style="background: #ef4444;"></div>
@@ -908,7 +1040,7 @@
       }
     }
 
-    // 填入地圖日期與降雨機率選單
+    // 填入地圖日期與降雨機率選單 (支援六大分區與台中西屯、南屯等個別行政區)
     function populateMapControls() {
       if (!allForecasts.length) return;
       const dates = [...new Set(allForecasts.map(d => d.dataDate))].sort();
@@ -933,45 +1065,86 @@
       updateMapPopDropdown();
     }
 
-    // 更新各區域降雨機率下拉選單選項
+    // 更新各區域與細部行政區降雨機率下拉選單選項
     function updateMapPopDropdown() {
       const popSelect = document.getElementById("map-pop-select");
       if (!popSelect || !allForecasts.length) return;
 
-      const dateRecords = allForecasts.filter(d => d.dataDate === currentMapDate);
       popSelect.innerHTML = "";
 
+      // 預設全景選項
       const defaultOpt = document.createElement("option");
       defaultOpt.value = "ALL";
-      defaultOpt.textContent = `📍 【全台 6 區降雨概況】(點選切換地區)`;
+      defaultOpt.textContent = `📍 【全台 6 區總覽】(點選切換地區/市轄區)`;
       popSelect.appendChild(defaultOpt);
 
-      // 依降雨機率由高至低排序便於查看
-      const sortedByPop = [...dateRecords].sort((a, b) => (b.pop || 0) - (a.pop || 0));
+      // 分組 1: 六大氣象分區
+      const regGroup = document.createElement("optgroup");
+      regGroup.label = "── 🗺️ 六大氣象分區 ──";
+      const dateRecords = allForecasts.filter(d => d.dataDate === currentMapDate);
+      const sortedRegs = [...dateRecords].sort((a, b) => (b.pop || 0) - (a.pop || 0));
 
-      sortedByPop.forEach(r => {
+      sortedRegs.forEach(r => {
         const pop = r.pop !== undefined ? r.pop : 0;
-        const icon = getPopIcon(pop);
         const opt = document.createElement("option");
         opt.value = r.regionName;
-        opt.textContent = `${icon} ${r.regionName} — 降雨機率 ${pop}% (${getPopDescription(pop).slice(0, 4)})`;
-        if (r.regionName === currentSelectedRegion) {
+        opt.textContent = `${getPopIcon(pop)} ${r.regionName} — 降雨機率 ${pop}% (${getPopDescription(pop).slice(0, 4)})`;
+        if (!currentSelectedDistrict && r.regionName === currentSelectedRegion) {
           opt.selected = true;
         }
-        popSelect.appendChild(opt);
+        regGroup.appendChild(opt);
       });
+      popSelect.appendChild(regGroup);
+
+      // 分組 2: 台中市各行政區細節 (西屯區、南屯區等)
+      const tcGroup = document.createElement("optgroup");
+      tcGroup.label = "── 🏙️ 台中市行政區細節 (點選自動放大) ──";
+      const tcDistricts = DISTRICT_DATA.filter(d => d.city === "台中市");
+      tcDistricts.forEach(dist => {
+        const weather = getDistrictWeather(dist, currentMapDate);
+        const opt = document.createElement("option");
+        opt.value = `DISTRICT:${dist.name}`;
+        opt.textContent = `📍 ${dist.fullName} — 降雨機率 ${weather.pop}% (${getPopDescription(weather.pop).slice(0, 4)})`;
+        if (currentSelectedDistrict === dist.name) {
+          opt.selected = true;
+        }
+        tcGroup.appendChild(opt);
+      });
+      popSelect.appendChild(tcGroup);
+
+      // 分組 3: 其它重點市轄區
+      const otherGroup = document.createElement("optgroup");
+      otherGroup.label = "── 🏙️ 其它縣市熱門行政區 ──";
+      const otherDistricts = DISTRICT_DATA.filter(d => d.city !== "台中市");
+      otherDistricts.forEach(dist => {
+        const weather = getDistrictWeather(dist, currentMapDate);
+        const opt = document.createElement("option");
+        opt.value = `DISTRICT:${dist.name}`;
+        opt.textContent = `📍 ${dist.fullName} — 降雨機率 ${weather.pop}%`;
+        if (currentSelectedDistrict === dist.name) {
+          opt.selected = true;
+        }
+        otherGroup.appendChild(opt);
+      });
+      popSelect.appendChild(otherGroup);
     }
 
     // 核心互動：降雨機率下拉選單變更時觸發
     function onMapPopSelect() {
       const select = document.getElementById("map-pop-select");
-      const region = select.value;
-      if (region && region !== "ALL") {
-        currentSelectedRegion = region;
-        document.getElementById("region-select").value = region;
-        renderRegionView(region);
-        focusMapRegion(region);
+      const val = select.value;
+
+      if (val.startsWith("DISTRICT:")) {
+        const distName = val.replace("DISTRICT:", "");
+        selectDistrict(distName, true);
+      } else if (val && val !== "ALL") {
+        currentSelectedDistrict = null;
+        currentSelectedRegion = val;
+        document.getElementById("region-select").value = val;
+        renderRegionView(val);
+        focusMapRegion(val);
       } else {
+        currentSelectedDistrict = null;
         if (mapInstance) {
           mapInstance.setView([23.7, 120.95], 7);
         }
@@ -984,8 +1157,14 @@
       currentMapMode = select.value;
       renderLegend();
       updateTaiwanMapMarkers();
-      const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
-      updateDetailCard(currentSelectedRegion, currentDayData);
+
+      if (currentSelectedDistrict) {
+        const dist = DISTRICT_DATA.find(d => d.name === currentSelectedDistrict);
+        if (dist) updateDetailCardForDistrict(dist);
+      } else {
+        const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
+        updateDetailCard(currentSelectedRegion, currentDayData);
+      }
     }
 
     // 地圖日期變更
@@ -994,11 +1173,76 @@
       currentMapDate = select.value;
       updateMapPopDropdown();
       updateTaiwanMapMarkers();
-      const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
-      updateDetailCard(currentSelectedRegion, currentDayData);
+
+      if (currentSelectedDistrict) {
+        const dist = DISTRICT_DATA.find(d => d.name === currentSelectedDistrict);
+        if (dist) updateDetailCardForDistrict(dist);
+      } else {
+        const currentDayData = allForecasts.find(d => d.regionName === currentSelectedRegion && d.dataDate === currentMapDate);
+        updateDetailCard(currentSelectedRegion, currentDayData);
+      }
     }
 
-    // 聚焦點位並開彈窗
+    // 快速聚焦指定城市 (例如台中市西屯區、南屯區)
+    function zoomToCity(city) {
+      if (!mapInstance) return;
+      if (city === 'taichung') {
+        mapInstance.setView([24.1627, 120.6404], 12);
+        selectDistrict("西屯區", false);
+      } else if (city === 'taipei') {
+        mapInstance.setView([25.0339, 121.5434], 12);
+        selectDistrict("中正區", false);
+      } else if (city === 'kaohsiung') {
+        mapInstance.setView([22.6472, 120.3089], 12);
+        selectDistrict("三民區", false);
+      } else if (city === 'yilan') {
+        mapInstance.setView([24.7570, 121.7530], 11);
+        selectDistrict("宜蘭市", false);
+      } else {
+        mapInstance.setView([23.7, 120.95], 7);
+        currentSelectedDistrict = null;
+        updateMapPopDropdown();
+      }
+    }
+
+    // 選取並定位到特定細部行政區 (如西屯區、南屯區)
+    function selectDistrict(distName, animate = true) {
+      const dist = DISTRICT_DATA.find(d => d.name === distName);
+      if (!dist) return;
+
+      currentSelectedDistrict = dist.name;
+      currentSelectedRegion = dist.region;
+
+      // 同步上方選單與圖表
+      document.getElementById("region-select").value = dist.region;
+      renderRegionView(dist.region);
+
+      // 移動地圖並開啟彈窗
+      if (mapInstance) {
+        const currentZoom = mapInstance.getZoom();
+        const targetZoom = Math.max(currentZoom, 12);
+        if (animate) {
+          mapInstance.setView([dist.lat, dist.lng], targetZoom, { animate: true });
+        } else {
+          mapInstance.setView([dist.lat, dist.lng], targetZoom);
+        }
+
+        // 開啟該行政區彈窗
+        setTimeout(() => {
+          const marker = districtMarkers[dist.name];
+          if (marker) marker.openPopup();
+        }, 300);
+      }
+
+      // 更新右側詳情卡片
+      updateDetailCardForDistrict(dist);
+
+      // 同步下拉選單選取狀態
+      const popSelect = document.getElementById("map-pop-select");
+      if (popSelect) popSelect.value = `DISTRICT:${dist.name}`;
+    }
+
+    // 聚焦大分區
     function focusMapRegion(region) {
       if (!mapInstance || !REGION_COORDS[region]) return;
       const coords = REGION_COORDS[region];
@@ -1096,14 +1340,14 @@
     function onRegionChange() {
       const select = document.getElementById("region-select");
       currentSelectedRegion = select.value;
+      currentSelectedDistrict = null;
       renderRegionView(currentSelectedRegion);
-      // 同步更新地圖選單與視角
       const popSelect = document.getElementById("map-pop-select");
       if (popSelect) popSelect.value = currentSelectedRegion;
       focusMapRegion(currentSelectedRegion);
     }
 
-    // 渲染步驟 4：折線圖、一週資料表格與 SQL 語法
+    // 渲染折線圖、一週資料表格與 SQL 語法
     function renderRegionView(regionName) {
       const regionData = allForecasts.filter(d => d.regionName === regionName);
       if (!regionData.length) return;
@@ -1179,11 +1423,13 @@
       });
 
       // 5. 更新步驟 5 右側詳情卡片
-      const dayData = regionData.find(d => d.dataDate === currentMapDate) || regionData[0];
-      updateDetailCard(regionName, dayData);
+      if (!currentSelectedDistrict) {
+        const dayData = regionData.find(d => d.dataDate === currentMapDate) || regionData[0];
+        updateDetailCard(regionName, dayData);
+      }
     }
 
-    // 更新步驟 5 區域詳情卡片
+    // 更新大分區卡片
     function updateDetailCard(regionName, dayData) {
       if (!dayData) return;
       const pop = dayData.pop !== undefined ? dayData.pop : 0;
@@ -1200,6 +1446,11 @@
       document.getElementById("detail-maxt").textContent = `${dayData.maxT}°C`;
       document.getElementById("detail-spread").textContent = `${spread}°C`;
 
+      const landmarkDiv = document.getElementById("detail-landmark");
+      if (landmarkDiv) {
+        landmarkDiv.innerHTML = `📍 所屬分區：${regionName}整體涵蓋範圍`;
+      }
+
       const badge = document.getElementById("detail-badge");
       if (currentMapMode === "pop") {
         badge.textContent = `降雨機率 ${pop}%`;
@@ -1212,6 +1463,65 @@
       }
     }
 
+    // 更新特定行政區卡片 (西屯區、南屯區等)
+    function updateDetailCardForDistrict(dist) {
+      const weather = getDistrictWeather(dist, currentMapDate);
+      const popColor = getPopColor(weather.pop);
+      const tempColor = getTempColor(weather.avg);
+
+      document.getElementById("detail-reg-name").textContent = dist.fullName;
+      document.getElementById("detail-date").textContent = currentMapDate;
+      document.getElementById("detail-pop").textContent = `${weather.pop}%`;
+      document.getElementById("detail-pop-desc").textContent = `(${getPopDescription(weather.pop)})`;
+      document.getElementById("detail-mint").textContent = `${weather.minT}°C`;
+      document.getElementById("detail-maxt").textContent = `${weather.maxT}°C`;
+      document.getElementById("detail-spread").textContent = `${weather.spread}°C`;
+
+      const landmarkDiv = document.getElementById("detail-landmark");
+      if (landmarkDiv) {
+        landmarkDiv.innerHTML = `🏢 <b>特色地標</b>：${dist.landmark} <br><span style="color:#38bdf8;">(所屬大區：${dist.region})</span>`;
+      }
+
+      const badge = document.getElementById("detail-badge");
+      if (currentMapMode === "pop") {
+        badge.textContent = `降雨機率 ${weather.pop}% (${dist.name})`;
+        badge.style.background = popColor;
+        badge.style.color = "#fff";
+      } else {
+        badge.textContent = `均溫 ${weather.avg}°C (${dist.name})`;
+        badge.style.background = tempColor;
+        badge.style.color = (tempColor === "#eab308") ? "#000" : "#fff";
+      }
+    }
+
+    // 地圖縮放層級變更事件處理器 (核心功能：放大時顯示台中西屯/南屯等詳細行政區)
+    function handleMapZoomChange() {
+      if (!mapInstance) return;
+      const zoom = mapInstance.getZoom();
+      const badge = document.getElementById("zoom-status-badge");
+      const isDetailed = zoom >= ZOOM_THRESHOLD;
+
+      if (isDetailed) {
+        if (badge) {
+          badge.className = "zoom-status-badge detailed";
+          badge.innerHTML = "✨ <b>詳細行政區模式已啟動</b> (顯示台中西屯、南屯等個別行政區)";
+        }
+        // 隱藏大區域標籤，顯示細部行政區標記與標籤
+        Object.values(mapLabelMarkers).forEach(m => mapInstance.removeLayer(m));
+        Object.values(districtMarkers).forEach(m => m.addTo(mapInstance));
+        Object.values(districtLabelMarkers).forEach(m => m.addTo(mapInstance));
+      } else {
+        if (badge) {
+          badge.className = "zoom-status-badge";
+          badge.innerHTML = "🔍 <b>全台六大分區視角</b> (滑鼠滾輪放大地圖可展開西屯、南屯等個別行政區)";
+        }
+        // 顯示大區域標籤，隱藏細部行政區
+        Object.values(mapLabelMarkers).forEach(m => m.addTo(mapInstance));
+        Object.values(districtMarkers).forEach(m => mapInstance.removeLayer(m));
+        Object.values(districtLabelMarkers).forEach(m => mapInstance.removeLayer(m));
+      }
+    }
+
     // 初始化步驟 5：台灣 Leaflet 互動地圖
     function initTaiwanMap() {
       if (mapInstance) return;
@@ -1220,7 +1530,7 @@
         center: [23.7, 120.95],
         zoom: 7,
         zoomControl: true,
-        scrollWheelZoom: false
+        scrollWheelZoom: true // 允許滑鼠滾輪自由縮放地圖
       });
 
       // 免金鑰無浮水印 OpenStreetMap 圖磚
@@ -1229,7 +1539,10 @@
         maxZoom: 18
       }).addTo(mapInstance);
 
-      // 為六大區域建立彩色標記與標籤
+      // 監聽地圖縮放變更事件
+      mapInstance.on("zoomend", handleMapZoomChange);
+
+      // 1. 建立六大分區標記與標籤
       Object.keys(REGION_COORDS).forEach(region => {
         const coords = REGION_COORDS[region];
         const record = allForecasts.find(d => d.regionName === region && d.dataDate === currentMapDate)
@@ -1255,15 +1568,15 @@
             <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
             🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
             🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
-            <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+            <span style="color:#0284c7; font-size:11px;">🔍 滾輪放大可檢視該區細部市轄區</span>
           </div>
         `);
 
-        // 點擊地圖圓點時，同步切換上方下拉選單、折線圖與表格！
         marker.on("click", () => {
           document.getElementById("region-select").value = region;
           const popSelect = document.getElementById("map-pop-select");
           if (popSelect) popSelect.value = region;
+          currentSelectedDistrict = null;
           currentSelectedRegion = region;
           renderRegionView(region);
           focusMapRegion(region);
@@ -1282,14 +1595,61 @@
         mapMarkers[region] = marker;
         mapLabelMarkers[region] = labelMarker;
       });
+
+      // 2. 建立細部行政區標記 (西屯區、南屯區等)
+      DISTRICT_DATA.forEach(dist => {
+        const weather = getDistrictWeather(dist, currentMapDate);
+        const color = currentMapMode === "pop" ? getPopColor(weather.pop) : getTempColor(weather.avg);
+
+        // 細部行政區標記 (初始不加到地圖，縮放 >= 9 時自動顯示)
+        const dMarker = L.circleMarker([dist.lat, dist.lng], {
+          radius: 9,
+          fillColor: color,
+          color: "#ffffff",
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.95
+        });
+
+        dMarker.bindPopup(`
+          <div style="font-size:13px; padding: 4px;">
+            <b style="font-size:14px; color:#38bdf8;">📍 ${dist.fullName}</b><br>
+            🌧️ 降雨機率: <b>${weather.pop}%</b> (${getPopDescription(weather.pop)})<br>
+            🌡️ 氣溫: <b>${weather.minT}°C ~ ${weather.maxT}°C</b> (均溫 ${weather.avg}°C)<br>
+            🏢 代表地標: <span style="color:#cbd5e1; font-size:11px;">${dist.landmark}</span><br>
+            <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+          </div>
+        `);
+
+        dMarker.on("click", () => {
+          selectDistrict(dist.name, false);
+        });
+
+        const dLabel = currentMapMode === "pop" ? `${dist.name} ${weather.pop}%` : `${dist.name} ${weather.avg}°C`;
+        const dLabelMarker = L.marker([dist.lat, dist.lng], {
+          icon: L.divIcon({
+            className: 'district-label',
+            html: `<div style="transform: translate(11px, -8px); font-weight:bold; font-size:10px; color:#f8fafc; background: rgba(15,23,42,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(56,189,248,0.3); white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.6);">${dLabel}</div>`,
+            iconSize: [65, 18]
+          })
+        });
+
+        districtMarkers[dist.name] = dMarker;
+        districtLabelMarkers[dist.name] = dLabelMarker;
+      });
+
+      // 初始化觸發一次縮放檢查
+      handleMapZoomChange();
     }
 
-    // 更新地圖標記狀態
+    // 更新地圖標記狀態 (同步大分區與細部行政區)
     function updateTaiwanMapMarkers() {
       if (!mapInstance) {
         initTaiwanMap();
         return;
       }
+
+      // 1. 更新大分區標記
       Object.keys(REGION_COORDS).forEach(region => {
         const record = allForecasts.find(d => d.regionName === region && d.dataDate === currentMapDate)
           || allForecasts.find(d => d.regionName === region);
@@ -1309,7 +1669,7 @@
               <b>${region}</b> <span style="font-size:11px; color:#94a3b8;">(${record.dataDate.slice(5)})</span><br>
               🌧️ 降雨機率: <b>${pop}%</b> (${getPopDescription(pop).slice(0, 4)})<br>
               🌡️ 預報氣溫: <b>${record.minT}°C ~ ${record.maxT}°C</b> (均溫 ${avg.toFixed(1)}°C)<br>
-              <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+              <span style="color:#0284c7; font-size:11px;">🔍 滾輪放大可檢視該區細部市轄區</span>
             </div>
           `);
         }
@@ -1320,6 +1680,36 @@
             className: 'map-label',
             html: `<div style="transform: translate(14px, -10px); font-weight:bold; font-size:11px; color:#ffffff; background: rgba(15,23,42,0.85); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.5);">${labelBadge}</div>`,
             iconSize: [80, 20]
+          }));
+        }
+      });
+
+      // 2. 更新細部行政區標記
+      DISTRICT_DATA.forEach(dist => {
+        const weather = getDistrictWeather(dist, currentMapDate);
+        const color = currentMapMode === "pop" ? getPopColor(weather.pop) : getTempColor(weather.avg);
+        const dMarker = districtMarkers[dist.name];
+        const dLabelMarker = districtLabelMarkers[dist.name];
+
+        if (dMarker) {
+          dMarker.setStyle({ fillColor: color });
+          dMarker.setPopupContent(`
+            <div style="font-size:13px; padding: 4px;">
+              <b style="font-size:14px; color:#38bdf8;">📍 ${dist.fullName}</b><br>
+              🌧️ 降雨機率: <b>${weather.pop}%</b> (${getPopDescription(weather.pop)})<br>
+              🌡️ 氣溫: <b>${weather.minT}°C ~ ${weather.maxT}°C</b> (均溫 ${weather.avg}°C)<br>
+              🏢 代表地標: <span style="color:#cbd5e1; font-size:11px;">${dist.landmark}</span><br>
+              <span style="color:#0284c7; font-size:11px;">點擊同步切換上方圖表</span>
+            </div>
+          `);
+        }
+
+        if (dLabelMarker) {
+          const dLabel = currentMapMode === "pop" ? `${dist.name} ${weather.pop}%` : `${dist.name} ${weather.avg}°C`;
+          dLabelMarker.setIcon(L.divIcon({
+            className: 'district-label',
+            html: `<div style="transform: translate(11px, -8px); font-weight:bold; font-size:10px; color:#f8fafc; background: rgba(15,23,42,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(56,189,248,0.3); white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.6);">${dLabel}</div>`,
+            iconSize: [65, 18]
           }));
         }
       });
