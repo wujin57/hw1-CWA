@@ -179,6 +179,95 @@
       100% { transform: rotate(360deg); }
     }
 
+    .badge-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .badge-time.fresh {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    /* Skeleton Loading Effect */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0.05) 75%) !important;
+      background-size: 200% 100% !important;
+      animation: shimmer 1.5s infinite !important;
+      border-radius: 4px;
+      color: transparent !important;
+      user-select: none;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Toast Notifications Container */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s ease;
+    }
+
+    .toast.toast-success {
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #4ade80;
+    }
+
+    .toast.toast-error {
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+
+    .toast.toast-info {
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+    }
+
+    .toast.toast-warning {
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #fbbf24;
+    }
+
+    @keyframes toastSlideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     /* KPI Summary Row */
     .kpi-row {
       display: grid;
@@ -614,6 +703,9 @@
 </head>
 <body>
 
+  <!-- Toast 浮動通知容器 -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
   <!-- Top Header -->
   <header>
     <div class="container header-flex">
@@ -625,13 +717,20 @@
         </div>
       </div>
       <div class="header-badges">
-        <button id="btn-sync" class="btn-sync" onclick="manualRefresh()" title="點擊向後端請求即時同步最新氣象資料">
+        <!-- 最後更新時間顯示 (自動即時換算) -->
+        <div id="last-update-badge" class="badge-time" title="氣象預報最後同步時間 (每小時自動於後端刷新快取)">
+          <span>🕒</span>
+          <span id="last-update-text">檢查更新中...</span>
+        </div>
+        <!-- 精簡手動重新整理按鈕 -->
+        <button id="btn-sync" class="btn-sync" onclick="manualRefresh()" title="點擊向伺服器請求即時更新氣象資料">
           <span id="sync-icon">🔄</span>
-          <span id="sync-text">即時更新預報</span>
+          <span id="sync-text">重新整理</span>
         </button>
+        <!-- 即時連線狀態標籤 -->
         <div class="badge-live">
-          <span class="pulse-dot"></span>
-          <span id="live-status-text">SQLite (data.db) 正常連線</span>
+          <span class="pulse-dot" id="live-pulse"></span>
+          <span id="live-status-text">SQLite 正常連線</span>
         </div>
       </div>
     </div>
@@ -1156,23 +1255,203 @@
       }
     }
 
-    // 初始化載入
-    async function init() {
+    // =========================================================================
+    // 智慧資料更新與使用者體驗（SWR 快取、Skeleton 骨架屏、Toast、定時器）
+    // =========================================================================
+
+    let lastUpdatedTimestamp = null;
+    let relativeTimer = null;
+    let isFetchingForecasts = false;
+
+    // 1. Toast 浮動訊息管理 (友善錯誤防護與狀態通知)
+    function showToast(message, type = "info", duration = 3000) {
+      let container = document.getElementById("toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        container.className = "toast-container";
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      const icon = type === "success" ? "✓" : (type === "error" ? "⚠️" : (type === "warning" ? "🔔" : "ℹ️"));
+      toast.innerHTML = `<span style="font-size:1.1rem;">${icon}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(100%)";
+        setTimeout(() => toast.remove(), 350);
+      }, duration);
+    }
+
+    // 2. 骨架屏狀態切換 (Skeleton Loading State)
+    function toggleSkeleton(show) {
+      const kpiIds = ["kpi-maxt", "kpi-mint", "kpi-pop", "kpi-spread"];
+      kpiIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (show) el.classList.add("skeleton");
+          else el.classList.remove("skeleton");
+        }
+      });
+    }
+
+    // 3. 計算相對時間 (例如「剛剛」、「2 分鐘前」)
+    function formatRelativeTime(ts) {
+      if (!ts) return "剛剛";
+      const now = Math.floor(Date.now() / 1000);
+      const diff = Math.max(0, now - ts);
+      if (diff < 30) return "剛剛";
+      if (diff < 3600) return `${Math.floor(diff / 60)} 分鐘前`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} 小時前`;
+      return "今日稍早";
+    }
+
+    // 更新 Header 的最後更新時間標籤
+    function updateRelativeTimeDisplay() {
+      const textEl = document.getElementById("last-update-text");
+      const badge = document.getElementById("last-update-badge");
+      if (!textEl || !lastUpdatedTimestamp) return;
+
+      const dateObj = new Date(lastUpdatedTimestamp * 1000);
+      const timeStr = dateObj.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      const relStr = formatRelativeTime(lastUpdatedTimestamp);
+
+      textEl.textContent = `最後更新於 ${timeStr} (${relStr})`;
+      if (badge) badge.classList.add("fresh");
+    }
+
+    function startRelativeTimer() {
+      if (relativeTimer) clearInterval(relativeTimer);
+      updateRelativeTimeDisplay();
+      relativeTimer = setInterval(updateRelativeTimeDisplay, 15000);
+    }
+
+    // 4. 核心獲取資料函數 (Auto-fetch & Background Revalidation)
+    async function fetchForecasts(options = { isManual: false, silent: false }) {
+      if (isFetchingForecasts) return;
+      isFetchingForecasts = true;
+
+      const { isManual = false, silent = false } = options;
+      const liveStatus = document.getElementById("live-status-text");
+      const livePulse = document.getElementById("live-pulse");
+
+      // 若畫面上尚無任何資料，啟用骨架屏動畫
+      if (!allForecasts.length) {
+        toggleSkeleton(true);
+      }
+
       try {
-        const res = await fetch('/api/forecasts');
+        // 設定 10 秒超時 AbortController
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        const res = await fetch('/api/forecasts', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`HTTP 錯誤碼: ${res.status}`);
         const json = await res.json();
-        if (json.status === 'success') {
+
+        if (json.status === 'success' && Array.isArray(json.data) && json.data.length > 0) {
           allForecasts = json.data;
+
+          // 寫入 localStorage 本地快取 (提供下一次開啟 0ms 秒開體驗)
+          try {
+            localStorage.setItem("hw1_weather_cache", JSON.stringify({
+              data: json.data,
+              today: json.today,
+              last_updated: json.last_updated,
+              timestamp: json.timestamp || Math.floor(Date.now() / 1000)
+            }));
+          } catch (e) {
+            console.warn("無法寫入 localStorage 快取:", e);
+          }
+
+          // 更新時間戳記與相對時間計時器
+          lastUpdatedTimestamp = json.timestamp || Math.floor(Date.now() / 1000);
+          startRelativeTimer();
+
+          if (liveStatus) liveStatus.textContent = `已同步今日 (${json.today || allForecasts[0]?.dataDate})`;
+          if (livePulse) livePulse.style.background = "#22c55e";
+
           updateDateBadges(json.today);
           populateMapControls();
           renderLegend();
+          toggleSkeleton(false);
           renderKPIs();
           renderRegionView(currentSelectedRegion);
           initTaiwanMap();
+          updateTaiwanMapMarkers();
+
+          if (isManual) {
+            showToast("✓ 氣象預報已成功重新整理至最新！", "success", 2500);
+          } else if (!silent) {
+            const timeTag = json.last_updated ? json.last_updated.slice(11, 16) : "剛剛";
+            showToast(`✓ 已自動載入最新氣象預報 (${timeTag})`, "info", 2500);
+          }
+        } else {
+          throw new Error(json.message || "氣象資料格式解析失敗");
         }
       } catch (err) {
         console.error("載入預報資料失敗:", err);
+        toggleSkeleton(false);
+        if (liveStatus) liveStatus.textContent = "連線異常 (已啟用快取)";
+        if (livePulse) livePulse.style.background = "#f59e0b";
+
+        // 離線快取防護 (Fallback to Cache)
+        const cached = localStorage.getItem("hw1_weather_cache");
+        if (cached && !allForecasts.length) {
+          try {
+            const cJson = JSON.parse(cached);
+            allForecasts = cJson.data;
+            lastUpdatedTimestamp = cJson.timestamp;
+            startRelativeTimer();
+            updateDateBadges(cJson.today);
+            populateMapControls();
+            renderLegend();
+            renderKPIs();
+            renderRegionView(currentSelectedRegion);
+            initTaiwanMap();
+            showToast("⚠️ 目前網路異常，已自動為您載入先前暫存之離線氣象預報", "warning", 4500);
+            return;
+          } catch (e) {}
+        }
+
+        showToast("⚠️ 無法連線至伺服器，請檢查網路連線或稍後再試", "error", 4500);
+      } finally {
+        isFetchingForecasts = false;
       }
+    }
+
+    // 5. 初始化進入頁面自動載入 (Auto-fetch on Mount)
+    async function init() {
+      // 步驟 A：若有 LocalStorage 快取，0 毫秒極速呈現先前資料（避免白屏）
+      const cached = localStorage.getItem("hw1_weather_cache");
+      let hasCached = false;
+      if (cached) {
+        try {
+          const cJson = JSON.parse(cached);
+          if (Array.isArray(cJson.data) && cJson.data.length > 0) {
+            allForecasts = cJson.data;
+            lastUpdatedTimestamp = cJson.timestamp;
+            startRelativeTimer();
+            updateDateBadges(cJson.today);
+            populateMapControls();
+            renderLegend();
+            renderKPIs();
+            renderRegionView(currentSelectedRegion);
+            initTaiwanMap();
+            hasCached = true;
+          }
+        } catch (e) {
+          console.warn("解析 localStorage 失敗:", e);
+        }
+      }
+
+      // 步驟 B：使用者一進入頁面，自動向伺服器拉取最新預報 (Auto-fetch on mount & Revalidate)
+      fetchForecasts({ isManual: false, silent: hasCached });
     }
 
     // 填入地圖日期與降雨機率選單 (支援六大分區與台中西屯、南屯等個別行政區)
@@ -1404,39 +1683,39 @@
       }
     }
 
-    // 手動觸發即時更新
+    let lastManualRefreshTime = 0;
+
+    // 手動觸發即時更新 (具備防重複點擊與 Toast 提示)
     async function manualRefresh() {
+      const now = Date.now();
+      if (now - lastManualRefreshTime < 3000) {
+        showToast("⚠️ 氣象資料剛同步過，請稍候再試", "warning", 2000);
+        return;
+      }
+      lastManualRefreshTime = now;
+
       const btn = document.getElementById("btn-sync");
       const text = document.getElementById("sync-text");
       btn.classList.add("spinning");
-      text.textContent = "更新中...";
+      text.textContent = "同步中...";
 
       try {
         const res = await fetch('/api/refresh', { method: 'POST' });
         const json = await res.json();
         if (json.status === 'success') {
-          const fRes = await fetch('/api/forecasts');
-          const fJson = await fRes.json();
-          if (fJson.status === 'success') {
-            allForecasts = fJson.data;
-            updateDateBadges(fJson.today);
-            populateMapControls();
-            renderKPIs();
-            renderRegionView(currentSelectedRegion);
-            updateTaiwanMapMarkers();
-          }
-          text.textContent = "✓ 已更新！";
+          await fetchForecasts({ isManual: true, silent: false });
+          text.textContent = "✓ 已完成";
           setTimeout(() => {
-            text.textContent = "即時更新預報";
-          }, 2500);
+            text.textContent = "重新整理";
+          }, 2000);
         } else {
-          text.textContent = "更新失敗";
-          setTimeout(() => { text.textContent = "即時更新預報"; }, 2000);
+          showToast(`⚠️ 更新失敗: ${json.message || "未知原因"}`, "error");
+          text.textContent = "重新整理";
         }
       } catch (err) {
         console.error("手動更新失敗:", err);
-        text.textContent = "更新失敗";
-        setTimeout(() => { text.textContent = "即時更新預報"; }, 2000);
+        showToast("⚠️ 無法連線至伺服器，請稍後重試", "error");
+        text.textContent = "重新整理";
       } finally {
         btn.classList.remove("spinning");
       }
