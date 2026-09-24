@@ -1134,12 +1134,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 顯示執行的 SQL 查詢語法 -->
-      <div class="sql-box">
-        <span>⚡ <b>後端執行 SQL 查詢：</b></span>
-        <code id="sql-text">SELECT id, regionName, dataDate, minT, maxT, pop, uvi, ci FROM TemperatureForecasts WHERE regionName = '中部地區' ORDER BY dataDate ASC;</code>
-      </div>
     </section>
 
     <!-- ================================================================= -->
@@ -2265,11 +2259,7 @@
       const regionData = allForecasts.filter(d => d.regionName === regionName);
       if (!regionData.length) return;
 
-      // 1. 更新 SQL 顯示
-      document.getElementById("sql-text").textContent = 
-        `SELECT id, regionName, dataDate, minT, maxT, pop, uvi, ci FROM TemperatureForecasts WHERE regionName = '${regionName}' ORDER BY dataDate ASC;`;
-
-      // 2. 更新折線圖標題
+      // 1. 更新折線圖標題
       if (currentSelectedDistrict) {
         const dist = DISTRICT_DATA.find(d => d.id === currentSelectedDistrict || d.name === currentSelectedDistrict);
         document.getElementById("chart-title").textContent = dist 
